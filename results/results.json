@@ -1,0 +1,252 @@
+{
+  "matrix_shape_raw": [
+    36384,
+    49310
+  ],
+  "n_cells_loaded": 49310,
+  "n_genes_loaded": 29462,
+  "n_cells_after_qc": 42824,
+  "programs_scored": [
+    "prog_casein_secretion",
+    "prog_lipid_synthesis",
+    "prog_hmo_glycosylation",
+    "prog_secretory_machinery",
+    "prog_stress_response",
+    "prog_immune_signalling"
+  ],
+  "median_donors_per_timepoint": 1.0,
+  "clock_donor_heldout": {
+    "mae_log": 0.7451200177619066,
+    "r2": 0.5273322797244224
+  },
+  "clock_random_split": {
+    "mae_log": 0.6500168370577336,
+    "r2": 0.6332187684208974
+  },
+  "r2_inflation_from_leakage": 0.10588648869647499,
+  "clock_lactocyte_only": {
+    "label": "epithelial cell",
+    "n_cells": 20540,
+    "r2": 0.5550312892191167,
+    "fold_r2": [
+      0.6658811538800182,
+      0.08193060399922525,
+      0.4621670870538791,
+      0.5109687878777069,
+      0.5731792095632724
+    ]
+  },
+  "representation_r2": {
+    "HVG (1518 genes)": [
+      0.48290321069416553,
+      0.1042077802601178
+    ],
+    "PCA (40 comps)": [
+      0.5394196968737401,
+      0.14124177539029975
+    ],
+    "curated programs": [
+      0.15054831106417835,
+      0.1258382902501876
+    ]
+  },
+  "celltype_accuracy_donor_heldout": 0.98024,
+  "median_confidence": 0.9983333333333333,
+  "null_r2_mean": -0.27092623332459104,
+  "null_r2_max": -0.037198558945069383,
+  "null_p": 0.047619047619047616,
+  "fold_r2": [
+    0.6370350234287345,
+    0.42805072574312086,
+    0.5768976412622517,
+    0.3893135203916446,
+    0.3832191426450755
+  ],
+  "donor_identity_accuracy": 0.6195999999999999,
+  "donor_identity_chance": 0.16176,
+  "top_shap_genes": [
+    "LYZ",
+    "HPGD",
+    "HLA-DRA",
+    "SFRP1",
+    "B2M",
+    "KRT15",
+    "CSN2",
+    "KRT80",
+    "CD74",
+    "BTN1A1",
+    "C3",
+    "ANXA2",
+    "S100A10",
+    "SCD",
+    "IL7R",
+    "LALBA",
+    "HSPB1",
+    "CSN3",
+    "HSPA5",
+    "CLDN4",
+    "HLA-DPB1",
+    "TLR2",
+    "MCAM",
+    "MT-ND4",
+    "MT2A",
+    "STEAP4",
+    "CRYAB",
+    "SSR4",
+    "KRT19",
+    "MT-ND5"
+  ],
+  "shap_perm_overlap_top25": 19,
+  "program_attribution": {
+    "Casein secretion": 0.11845270297917394,
+    "Lipid synthesis": 0.10243191143713445,
+    "HMO glycosylation": 0.02098086962610577,
+    "Secretory machinery": 0.05975172728351488,
+    "Stress response": 0.007773495126653557,
+    "Immune signalling": 0.3553426148507776,
+    "(all other genes)": 1.1782266937882966
+  },
+  "program_ablation_r2_loss": {
+    "casein_secretion": 0.06974781087420667,
+    "lipid_synthesis": 0.04172527809546822,
+    "hmo_glycosylation": 0.003559936573805045,
+    "secretory_machinery": 0.004558869830578405,
+    "stress_response": 0.00011474221057428124,
+    "immune_signalling": 0.2633253977859208
+  },
+  "ablation_control_p97_5": 0.02979261139436439,
+  "ablation_coverage": {
+    "casein_secretion": {
+      "in_features": [
+        "CSN1S1",
+        "CSN2",
+        "CSN3",
+        "LALBA"
+      ],
+      "n_in_features": 4,
+      "n_in_dataset": 4,
+      "n_total": 5
+    },
+    "lipid_synthesis": {
+      "in_features": [
+        "XDH",
+        "BTN1A1",
+        "PLIN2",
+        "FASN",
+        "SCD"
+      ],
+      "n_in_features": 5,
+      "n_in_dataset": 5,
+      "n_total": 6
+    },
+    "hmo_glycosylation": {
+      "in_features": [
+        "B4GALT1",
+        "ST3GAL1",
+        "FUT2",
+        "FUT3",
+        "B3GNT2",
+        "ST6GAL1"
+      ],
+      "n_in_features": 6,
+      "n_in_dataset": 6,
+      "n_total": 6
+    },
+    "secretory_machinery": {
+      "in_features": [
+        "SEC61A1",
+        "SSR4",
+        "XBP1",
+        "HSPA5",
+        "SEC11C"
+      ],
+      "n_in_features": 5,
+      "n_in_dataset": 5,
+      "n_total": 5
+    },
+    "stress_response": {
+      "in_features": [
+        "JUN",
+        "FOS",
+        "HSPA1A",
+        "DDIT3",
+        "JUNB"
+      ],
+      "n_in_features": 5,
+      "n_in_dataset": 5,
+      "n_total": 5
+    },
+    "immune_signalling": {
+      "in_features": [
+        "CD74",
+        "HLA-DRA",
+        "B2M",
+        "LYZ",
+        "IL1B"
+      ],
+      "n_in_features": 5,
+      "n_in_dataset": 5,
+      "n_total": 5
+    }
+  },
+  "base_r2_xai_model": 0.6087639660786022,
+  "faithfulness": {
+    "ks": [
+      0,
+      5,
+      10,
+      25,
+      50,
+      100,
+      200,
+      321
+    ],
+    "shap": [
+      0.765669507022896,
+      1.0340637878076897,
+      1.1327843591196674,
+      1.2414800822822953,
+      1.2919475014010222,
+      1.3428362654770394,
+      1.350203326943649,
+      1.349926033997826
+    ],
+    "random": [
+      0.7656695070228962,
+      0.7781095237387199,
+      0.779325881650836,
+      0.7902744825755027,
+      0.8268859257431871,
+      0.8915610006938548,
+      1.0330797039797273,
+      1.349926033997826
+    ]
+  },
+  "randomization_corr": 0.24699874066103006,
+  "figures": [
+    "F10_leakage_control.png",
+    "F11_shap_summary.png",
+    "F12_shap_waterfall_earliest.png",
+    "F12_shap_waterfall_latest.png",
+    "F14_permutation_importance.png",
+    "F15_program_attribution.png",
+    "F16_program_ablation.png",
+    "F17_counterfactuals.png",
+    "F18_faithfulness.png",
+    "F19_randomization_check.png",
+    "F1_sampling_grid.png",
+    "F20_nmf_loadings.png",
+    "F21_representation_comparison.png",
+    "F22_sample_permutation_null.png",
+    "F23_fold_variance.png",
+    "F24_donor_identity.png",
+    "F25_lactocyte_only_clock.png",
+    "F2_qc_by_donor.png",
+    "F3_cells_over_time.png",
+    "F4_umap_triptych.png",
+    "F5_composition_over_time.png",
+    "F7_classifier_confidence.png",
+    "F8_program_scores.png",
+    "F9_clock_predictions.png"
+  ]
+}

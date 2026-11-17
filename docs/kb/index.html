@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LactoXAI KB — milk cells, lactational time and the evidence behind each link</title>
+<style>
+:root{
+  --bg:#f7f7f5; --panel:#ffffff; --ink:#0b0b0b; --ink-2:#52514e; --ink-3:#7a7974; --rule:#e4e3df; --grid:#ecebe7; --axis:#b9b8b2; --band:#efeeea;
+  --accent:#2a78d6; --accent-soft:#e3eefb;
+  --early:#e34948; --later:#2a78d6; --nmf:#6250d6; --cur:#1baf7a; --model:#3d3c38; --data:#eb6834; --neutral:#a3a29c;
+  --good:#0a7d0a; --good-bg:#e6f5e6; --warn:#a36d00; --warn-bg:#fdf3d9; --bad:#c23333; --bad-bg:#fbe9e9; --mid:#52514e; --mid-bg:#efeeea;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,"Helvetica Neue",Arial,sans-serif;
+  --serif:"Iowan Old Style","Charter","Palatino Linotype",Georgia,serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,monospace;
+  color-scheme: light;
+}
+:root[data-theme="dark"]{
+  --bg:#121211; --panel:#1a1a19; --ink:#f0efec; --ink-2:#c3c2b7; --ink-3:#9a998f; --rule:#2e2e2b; --grid:#262624; --axis:#55544f; --band:#24241f;
+  --accent:#3987e5; --accent-soft:#1d2c40;
+  --early:#e66767; --later:#3987e5; --nmf:#9085e9; --cur:#199e70; --model:#d6d5cf; --data:#d95926; --neutral:#6c6b65;
+  --good:#4cc24c; --good-bg:#16301a; --warn:#fab219; --warn-bg:#3a2e10; --bad:#e66767; --bad-bg:#3a1c1c; --mid:#c3c2b7; --mid-bg:#2a2a27;
+  color-scheme: dark;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 var(--sans);-webkit-font-smoothing:antialiased}
+a{color:var(--accent)}
+button{font:inherit;color:inherit}
+.top{position:sticky;top:0;z-index:30;background:var(--panel);border-bottom:1px solid var(--rule)}
+.top .row{display:flex;align-items:center;gap:14px;height:54px;padding:0 20px;max-width:1280px;margin:0 auto}
+.logo{display:flex;align-items:center;gap:9px;text-decoration:none;color:var(--ink);font:600 16px/1 var(--serif)}
+.logo svg{width:22px;height:22px}
+.ver{font:500 11.5px/1 var(--sans);color:var(--ink-3);border:1px solid var(--rule);border-radius:999px;padding:4px 8px}
+.tabs{display:flex;gap:2px;margin-left:12px;overflow-x:auto;flex:1}
+.tabs a{padding:8px 11px;border-radius:8px;color:var(--ink-2);text-decoration:none;font-size:14px;white-space:nowrap}
+.tabs a:hover{background:var(--band);color:var(--ink)}
+.tabs a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.iconbtn{width:36px;height:36px;border-radius:9px;border:1px solid var(--rule);background:var(--panel);cursor:pointer;display:grid;place-items:center;font-size:17px}
+.iconbtn:hover{background:var(--band)}
+.back{font-size:13.5px;color:var(--ink-2);text-decoration:none;white-space:nowrap}
+.banner{max-width:1280px;margin:0 auto;padding:8px 20px;font-size:12.5px;color:var(--ink-3)}
+main{max-width:1280px;margin:0 auto;padding:6px 20px 60px}
+h1{font:600 26px/1.2 var(--serif);margin:10px 0 6px}
+.lede{color:var(--ink-2);margin:0 0 18px;max-width:820px}
+.panel{background:var(--panel);border:1px solid var(--rule);border-radius:12px}
+.view{display:none}.view.on{display:block}
+
+/* explore */
+.explore{display:grid;grid-template-columns:320px 1fr;gap:18px;align-items:start}
+.side{position:sticky;top:74px;max-height:calc(100vh - 92px);display:flex;flex-direction:column;overflow:hidden}
+.side .filters{display:flex;flex-wrap:wrap;gap:6px;padding:14px 14px 10px;border-bottom:1px solid var(--rule)}
+.chipf{font-size:12.5px;padding:5px 9px;border-radius:999px;border:1px solid var(--rule);background:var(--bg);cursor:pointer;color:var(--ink-2)}
+.chipf.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.side input{margin:10px 14px 6px;padding:9px 11px;border-radius:8px;border:1px solid var(--rule);background:var(--bg);color:var(--ink);font:14px var(--sans)}
+.elist{overflow:auto;padding:4px 6px 10px}
+.eitem{display:flex;align-items:center;gap:9px;padding:7px 9px;border-radius:8px;cursor:pointer;font-size:14px}
+.eitem:hover{background:var(--band)} .eitem.on{background:var(--accent-soft)}
+.eitem .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dot{width:10px;height:10px;border-radius:50%;flex:none}
+.pips{display:inline-flex;gap:3px;vertical-align:middle}
+.pips i{width:7px;height:7px;border-radius:2px;background:var(--band);border:1px solid var(--axis)}
+.pips i.f{background:var(--accent);border-color:var(--accent)}
+.card{padding:24px 26px}
+.tbadge{display:inline-flex;align-items:center;gap:7px;font:600 11.5px/1 var(--sans);letter-spacing:.6px;text-transform:uppercase;color:var(--ink-3)}
+.card h2{font:600 26px/1.2 var(--serif);margin:10px 0 8px}
+.card .desc{color:var(--ink-2);max-width:760px}
+.kv{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;margin:18px 0 6px}
+.kv div{background:var(--bg);border:1px solid var(--rule);border-radius:10px;padding:10px 12px}
+.kv b{display:block;font:600 17px/1.25 var(--sans)} .kv span{font-size:12.5px;color:var(--ink-3)}
+h4{font:600 13px/1 var(--sans);letter-spacing:.5px;text-transform:uppercase;color:var(--ink-3);margin:24px 0 10px}
+.checks{list-style:none;padding:0;margin:0;display:grid;gap:7px}
+.checks li{display:flex;gap:10px;align-items:flex-start;font-size:14.5px}
+.ic{flex:none;width:20px;height:20px;border-radius:6px;display:grid;place-items:center;font:700 12px/1 var(--sans)}
+.ic.pass{background:var(--good-bg);color:var(--good)} .ic.fail{background:var(--bad-bg);color:var(--bad)}
+.ic.notrun{background:var(--mid-bg);color:var(--mid)} .ic.flag{background:var(--warn-bg);color:var(--warn)}
+.links{display:grid;gap:8px}
+.lk{display:grid;grid-template-columns:150px 1fr auto;gap:12px;align-items:center;padding:9px 12px;border:1px solid var(--rule);border-radius:10px;font-size:14px}
+.lk .rel{color:var(--ink-3);font-size:13px}
+.lk .tgt{cursor:pointer;font-weight:600;color:var(--ink)} .lk .tgt:hover{color:var(--accent)}
+.lk .why{display:block;font-weight:400;color:var(--ink-2);font-size:13px;margin-top:2px}
+.src{font:600 11px/1 var(--sans);padding:4px 7px;border-radius:6px;white-space:nowrap}
+.src.model{border:1.5px dashed var(--axis);color:var(--ink-2)} .src.literature{border:1.5px solid var(--axis);color:var(--ink-2)}
+.st{font:600 11.5px/1 var(--sans);padding:4px 8px;border-radius:999px;white-space:nowrap}
+.st.supported,.st.good,.st.resolved,.st.pass{background:var(--good-bg);color:var(--good)}
+.st.weak,.st.part,.st.open{background:var(--warn-bg);color:var(--warn)}
+.st.untested,.st.weakv,.st.contested{background:var(--mid-bg);color:var(--mid)}
+.st.notsupported,.st.no,.st.refuted,.st.fail{background:var(--bad-bg);color:var(--bad)}
+.gchips{display:flex;flex-wrap:wrap;gap:6px}
+.gchip{font:500 12.5px/1 var(--mono);padding:6px 8px;border-radius:6px;background:var(--bg);border:1px solid var(--rule);cursor:pointer;color:var(--ink)}
+.gchip.known{border-color:var(--accent);background:var(--accent-soft)}
+.btn{display:inline-flex;align-items:center;gap:6px;font:500 13.5px/1 var(--sans);padding:9px 13px;border-radius:8px;border:1px solid var(--rule);background:var(--panel);cursor:pointer;color:var(--ink);text-decoration:none}
+.btn:hover{background:var(--band)}
+.qgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;margin-top:10px}
+.qbtn{text-align:left;padding:14px 16px;border-radius:10px;border:1px solid var(--rule);background:var(--bg);cursor:pointer;font-size:14.5px;line-height:1.4}
+.qbtn:hover{border-color:var(--accent);background:var(--accent-soft)}
+.qbtn span{display:block;font-size:12px;color:var(--ink-3);margin-top:6px}
+ol.rule{margin:6px 0 0;padding-left:20px;color:var(--ink-2)} ol.rule li{margin:3px 0}
+
+/* graph */
+.gctrl{display:flex;flex-wrap:wrap;gap:18px;align-items:center;padding:12px 16px;border-bottom:1px solid var(--rule);font-size:13.5px;color:var(--ink-2)}
+.gctrl label{display:flex;align-items:center;gap:8px}
+.gctrl input[type=range]{width:140px}
+.glegend{display:flex;flex-wrap:wrap;gap:14px;font-size:12.5px;color:var(--ink-2);padding:10px 16px;border-top:1px solid var(--rule)}
+.glegend i{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+#graph svg{display:block;width:100%;height:720px;cursor:grab;touch-action:none}
+#graph svg.drag{cursor:grabbing}
+.nlabel{font:11px var(--sans);fill:var(--ink-2);pointer-events:none;paint-order:stroke;stroke:var(--panel);stroke-width:3.5px;stroke-linejoin:round}
+.nlabel.big{font:600 12.5px var(--sans);fill:var(--ink)}
+.dim{opacity:.13}
+
+/* chains */
+.chain{padding:22px 24px;margin-bottom:16px}
+.chain h3{font:600 19px/1.3 var(--serif);margin:0 0 4px}
+.chain .weak{font-size:13.5px;color:var(--ink-2);margin:0 0 16px}
+.steps{display:flex;gap:0;align-items:stretch;overflow-x:auto;padding-bottom:4px}
+.step{flex:1 0 190px;max-width:260px;border:1.5px solid var(--rule);border-radius:10px;padding:12px 13px;background:var(--bg);font-size:13.5px;display:flex;flex-direction:column;gap:8px}
+.step.s-supported{border-color:color-mix(in srgb,var(--good) 55%,var(--rule))}
+.step.s-weak{border-color:var(--warn);border-width:2px}
+.step.s-untested{border-style:dashed}
+.step .t{font-weight:600;color:var(--ink);line-height:1.35}
+.step .n{font-size:12.5px;color:var(--ink-2)}
+.step .bd{display:flex;gap:6px;flex-wrap:wrap;margin-top:auto}
+.arrow{flex:none;width:26px;display:grid;place-items:center;color:var(--axis);font-size:18px}
+.ev{font:600 11px/1 var(--sans);padding:4px 7px;border-radius:6px;background:var(--panel);border:1px solid var(--rule);color:var(--ink-2)}
+
+/* claims + cards */
+.claims{display:grid;gap:14px}
+.claim{padding:20px 22px}
+.claim h3{font:600 18px/1.35 var(--serif);margin:8px 0 12px}
+.sides{display:grid;grid-template-columns:1fr auto 1fr;gap:14px;align-items:stretch}
+.side2{background:var(--bg);border:1px solid var(--rule);border-radius:10px;padding:12px 14px;font-size:14px}
+.side2 b{display:block;font-size:12px;letter-spacing:.4px;text-transform:uppercase;color:var(--ink-3);margin-bottom:5px}
+.vs{display:grid;place-items:center;font:600 12px var(--sans);color:var(--ink-3)}
+.settle{font-size:13.5px;color:var(--ink-2);margin-top:12px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px}
+.sc{padding:18px 20px;display:flex;flex-direction:column;gap:10px}
+.sc .q{font:600 16px/1.35 var(--sans)}
+.sc .m{font:600 24px/1.1 var(--serif);color:var(--accent)}
+.sc table{width:100%;border-collapse:collapse;font-size:13.5px}
+.sc td{padding:5px 0;border-bottom:1px solid var(--rule)} .sc td:last-child{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+.sc .foot{display:flex;justify-content:space-between;align-items:center;margin-top:auto;padding-top:6px}
+.kt{padding:16px 20px;margin-bottom:16px;display:flex;gap:14px;align-items:center}
+
+/* palette + tooltip */
+#pal{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;align-items:flex-start;justify-content:center;padding-top:12vh;z-index:60}
+#pal.on{display:flex}
+#pal .box{width:min(560px,92vw);background:var(--panel);border:1px solid var(--rule);border-radius:12px;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,.25)}
+#pal input{width:100%;border:0;border-bottom:1px solid var(--rule);padding:15px 16px;font:16px var(--sans);background:var(--panel);color:var(--ink);outline:none}
+#pal .res{max-height:50vh;overflow:auto;padding:6px}
+#tip{position:fixed;pointer-events:none;z-index:70;background:var(--ink);color:var(--bg);font-size:12.5px;line-height:1.4;padding:7px 9px;border-radius:7px;max-width:280px;opacity:0}
+@media (max-width:900px){ .top .row{flex-wrap:wrap;height:auto;padding:8px 14px;gap:8px} .tabs{order:5;flex-basis:100%;margin-left:-6px} .ver{display:none} .explore{grid-template-columns:1fr} .side{position:static;max-height:360px} .sides{grid-template-columns:1fr} .vs{display:none} .lk{grid-template-columns:1fr} .back{display:none} }
+</style>
+</head>
+<body>
+<div class="top"><div class="row">
+  <a class="logo" href="#explore"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5c-3.2 4.2-6.5 8.1-6.5 11.8a6.5 6.5 0 0013 0c0-3.7-3.3-7.6-6.5-11.8z" fill="var(--accent)" opacity=".9"/><circle cx="9.6" cy="14.4" r="1.4" fill="var(--panel)"/><circle cx="13.6" cy="16.6" r="1" fill="var(--panel)"/></svg>LactoXAI KB</a>
+  <span class="ver">v0.1 · demo</span>
+  <nav class="tabs" id="tabs">
+    <a href="#explore" data-v="explore">Explore</a><a href="#graph" data-v="graph">Graph</a>
+    <a href="#chains" data-v="chains">Semantic chains</a><a href="#contested" data-v="contested">Contested claims</a>
+    <a href="#scorecards" data-v="scorecards">Model scorecards</a>
+  </nav>
+  <button class="iconbtn" id="sbtn" title="Search (press /)" aria-label="Search"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M20 20l-4.6-4.6"/></svg></button>
+  <button class="iconbtn" id="tbtn" title="Toggle light / dark" aria-label="Toggle theme"><svg width="17" height="17" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 4a8 8 0 010 16z" fill="currentColor"/></svg></button>
+  <a class="back" href="../">← Overview</a>
+</div></div>
+<div class="banner">Research demo built from one public dataset (SCP1671). Every link shows where it came from and which checks it passed. Not for clinical use or medication decisions.</div>
+
+<main>
+<section class="view" id="v-explore">
+  <div class="explore">
+    <div class="panel side">
+      <div class="filters" id="filters"></div>
+      <input id="fq" placeholder="Filter entities…" aria-label="Filter entities">
+      <div class="elist" id="elist"></div>
+    </div>
+    <div class="panel card" id="ecard"></div>
+  </div>
+</section>
+
+<section class="view" id="v-graph">
+  <h1>Graph</h1>
+  <p class="lede">Genes settle between early and later lactation according to the direction the model learned. Model-derived links are dashed; literature-derived links are solid; thickness shows trust. Drag nodes; click one to open it.</p>
+  <div class="panel" id="graph">
+    <div class="gctrl">
+      <label>Min. trust for model links <input type="range" id="mt" min="0" max="5" value="0"><b id="mtv">0</b></label>
+      <label><input type="checkbox" id="hr"> Hide not-supported</label>
+      <label><input type="checkbox" id="gl" checked> Gene labels</label>
+      <button class="btn" id="reheat">Re-layout</button>
+    </div>
+    <svg id="gsvg" role="img" aria-label="Knowledge graph"></svg>
+    <div class="glegend">
+      <span><i style="background:var(--early)"></i>early lactation / gene pushing earlier</span>
+      <span><i style="background:var(--later)"></i>later lactation / gene pushing later</span>
+      <span><i style="background:var(--neutral)"></i>gene, direction not tested</span>
+      <span><i style="background:var(--nmf)"></i>NMF programme</span>
+      <span><i style="background:var(--cur)"></i>curated programme</span>
+      <span><i style="background:var(--model)"></i>model</span>
+      <span><i style="background:var(--data)"></i>data / cell type</span>
+      <span>— — model link &nbsp; —— literature link</span>
+    </div>
+  </div>
+</section>
+
+<section class="view" id="v-chains">
+  <h1>Semantic chains</h1>
+  <p class="lede">Mechanisms as step-by-step chains. Each step shows what kind of evidence it rests on and whether it held, so the weak links are visible rather than buried in prose.</p>
+  <div id="chains"></div>
+</section>
+
+<section class="view" id="v-contested">
+  <h1>Contested claims</h1>
+  <p class="lede">Where an expectation, the literature or my own earlier run disagrees with what the corrected analysis shows, and what would settle it.</p>
+  <div class="claims" id="claims"></div>
+</section>
+
+<section class="view" id="v-scorecards">
+  <h1>Model scorecards</h1>
+  <p class="lede">One card per question. Each compares the model with its baselines and lists the trust checks that applied to it and whether they passed. All numbers are read from the run's results file.</p>
+  <div class="panel kt" id="kt"></div>
+  <div class="cards" id="cards"></div>
+</section>
+</main>
+
+<div id="pal" role="dialog" aria-modal="true"><div class="box"><input id="pq" placeholder="Search genes, programmes, models…" autocomplete="off"><div class="res" id="pres"></div></div></div>
+<div id="tip"></div>
+
+<script>
+const KB = {"entities": [{"id": "ds", "type": "dataset", "name": "SCP1671 human milk atlas", "desc": "Nyquist SK, …, Shalek AK, Berger B, Goods BA. PNAS 2022. The paper follows 15 mothers for up to 632 days; in the public metadata, cells from 13 of them carry a timepoint, between days 3 and 323. 42,824 cells with a timepoint; 25,000 sampled for modelling.", "stats": [["Cells with a timepoint", "42,824"], ["Mothers", "13"], ["Days postpartum", "3–323"], ["Median mothers per timepoint", "1"]], "url": "https://singlecell.broadinstitute.org/single_cell/study/SCP1671"}, {"id": "early", "type": "phase", "name": "Early lactation", "desc": "The early end of the clock's axis. Genes linked here push predictions earlier when raised."}, {"id": "later", "type": "phase", "name": "Later lactation", "desc": "The later end of the clock's axis. Genes linked here push predictions later when raised. The clock cannot resolve months 6 to 11: only three mothers were sampled after 200 days."}, {"id": "clock", "type": "model", "name": "Lactation clock (all cells)", "desc": "Random forest predicting log days postpartum from 1,518 genes per cell, validated on held-out mothers.", "stats": [["R², held-out mothers", "0.53"], ["Fold range", "0.38–0.64"], ["Best of 20 permutations", "−0.04"], ["Leaky random split", "0.63"]], "checks": [["Validated on held-out mothers", "pass"], ["Beats the permutation null", "pass"], ["Leakage measured (+0.11)", "pass"]]}, {"id": "clock_epi", "type": "model", "name": "Lactation clock (epithelial only)", "desc": "The same model restricted to the 20,540 epithelial cells. It tests whether the clock reads cell state or cell mix.", "stats": [["R², held-out mothers", "0.56"], ["Fold range", "0.08–0.67"]], "checks": [["Validated on held-out mothers", "pass"], ["Beats the permutation null", "not run"], ["One fold weak (R² 0.08)", "fail"]]}, {"id": "donor_clf", "type": "model", "name": "Mother-identity classifier", "desc": "Adversarial control: predicts which mother a cell came from. It sets the ceiling on how much a model could gain by recognising mothers.", "stats": [["Accuracy", "62%"], ["Chance", "16%"]]}, {"id": "epi", "type": "celltype", "name": "Epithelial cell", "desc": "The largest population in milk; lactocytes are the milk-producing epithelial cells. 20,540 cells in the modelling sample."}, {"id": "NMF1", "type": "nmf", "name": "NMF1 · Macrophage", "desc": "Unsupervised programme found by NMF without time labels. Top genes: TREM2, CD163, LIPA, APOE, FTL, SIGLEC1, TIMP2, ITGB2, ACP5, GM2A. Programme names are an interpretation of the top genes.", "genes": ["TREM2", "CD163", "LIPA", "APOE", "FTL", "SIGLEC1", "TIMP2", "ITGB2", "ACP5", "GM2A", "CD84", "CECR1", "CAPG", "UCP2", "FCGRT", "HLA-DMB", "IFI6", "CTSZ", "LGALS1", "APOC1", "MSR1", "A2M", "GPNMB", "TMEM176B", "LRP1"], "stats": [["SHAP top-30 genes in programme", "0"]]}, {"id": "NMF2", "type": "nmf", "name": "NMF2 · Secretory lactocyte (+ mitochondrial)", "desc": "Unsupervised programme found by NMF without time labels. Top genes: LALBA, CSN2, CSN3, MT-RNR1, CSN1S1, MT-CO1, MT-ND4, LYZ, MT-CO3, MT-CYB. Programme names are an interpretation of the top genes.", "genes": ["LALBA", "CSN2", "CSN3", "MT-RNR1", "CSN1S1", "MT-CO1", "MT-ND4", "LYZ", "MT-CO3", "MT-CYB", "XDH", "MT-ATP6", "MT-ND5", "MT-CO2", "BTN1A1", "MT-ND2", "B2M", "HSP90AA1", "MT-ND3", "MT-ND1", "PLIN2", "MTRNR2L1", "FASN", "B4GALT1", "UBB"], "stats": [["SHAP top-30 genes in programme", "8"]]}, {"id": "NMF3", "type": "nmf", "name": "NMF3 · Immediate-early stress", "desc": "Unsupervised programme found by NMF without time labels. Top genes: MT1E, MT1X, JUN, ATF3, IER2, ZFP36, EGR1, CXCL2, MT1G, DDIT3. Programme names are an interpretation of the top genes.", "genes": ["MT1E", "MT1X", "JUN", "ATF3", "IER2", "ZFP36", "EGR1", "CXCL2", "MT1G", "DDIT3", "MT2A", "MT1M", "RHOB", "ARRDC3", "SLC30A1", "HSPA1B", "ERRFI1", "MT1F", "DUSP1", "NR4A1", "DDIT4", "OVOL1", "CLK1", "DNAJB1", "HSPA1A"], "stats": [["SHAP top-30 genes in programme", "1"]]}, {"id": "NMF4", "type": "nmf", "name": "NMF4 · Neutrophil", "desc": "Unsupervised programme found by NMF without time labels. Top genes: FCGR3B, CSF3R, TREM1, FPR1, ALOX5AP, IL8, HCAR3, FFAR2, TNFAIP6, IFITM2. Programme names are an interpretation of the top genes.", "genes": ["FCGR3B", "CSF3R", "TREM1", "FPR1", "ALOX5AP", "IL8", "HCAR3", "FFAR2", "TNFAIP6", "IFITM2", "CSF2RB", "FPR2", "OSM", "GPR97", "LRRK2", "HCAR2", "MXD1", "SERPINA1", "IL1B", "KCNJ15", "TNFAIP2", "TMEM154", "S100A8", "IL1R2", "CXCR2"], "stats": [["SHAP top-30 genes in programme", "0"]]}, {"id": "NMF5", "type": "nmf", "name": "NMF5 · T cell", "desc": "Unsupervised programme found by NMF without time labels. Top genes: ETS1, TRBC2, SPOCK2, PTPRCAP, CD3D, CD2, CD247, TRAC, ITK, BCL11B. Programme names are an interpretation of the top genes.", "genes": ["ETS1", "TRBC2", "SPOCK2", "PTPRCAP", "CD3D", "CD2", "CD247", "TRAC", "ITK", "BCL11B", "LTB", "FYN", "CD3E", "LCK", "IL2RB", "CD5", "CD6", "CD96", "PPP1R16B", "CCL5", "ZAP70", "RASGRP1", "CCND2", "GIMAP7", "ITGA4"], "stats": [["SHAP top-30 genes in programme", "0"]]}, {"id": "NMF6", "type": "nmf", "name": "NMF6 · MHC-II antigen-presenting", "desc": "Unsupervised programme found by NMF without time labels. Top genes: NR4A3, HLA-DOA, NR4A2, GRASP, HLA-DQB2, RGS1, HLA-DQB1, OLR1, HLA-DQA1, GPR183. Programme names are an interpretation of the top genes.", "genes": ["NR4A3", "HLA-DOA", "NR4A2", "GRASP", "HLA-DQB2", "RGS1", "HLA-DQB1", "OLR1", "HLA-DQA1", "GPR183", "RGS2", "HLA-DPA1", "HLA-DPB1", "VASH1", "FGL2", "HLA-DRA", "TCF4", "HBEGF", "SERPINB9", "HLA-DRB1", "CD74", "CST7", "CD93", "CSF1R", "CCR7"], "stats": [["SHAP top-30 genes in programme", "3"]]}, {"id": "NMF7", "type": "nmf", "name": "NMF7 · Progenitor-like epithelium", "desc": "Unsupervised programme found by NMF without time labels. Top genes: ACTG1, CLU, S100A9, SFRP1, DEFB1, KRT7, SOD2, ANXA1, CD74, HSP90AA1. Programme names are an interpretation of the top genes.", "genes": ["ACTG1", "CLU", "S100A9", "SFRP1", "DEFB1", "KRT7", "SOD2", "ANXA1", "CD74", "HSP90AA1", "C3", "CHI3L1", "B2M", "KRT15", "UBB", "CSN3", "HLA-DRA", "TNFSF10", "VTCN1", "HLA-B", "CSN1S1", "LALBA", "CAPN2", "CRYAB", "AK5"], "stats": [["SHAP top-30 genes in programme", "9"]]}, {"id": "NMF8", "type": "nmf", "name": "NMF8 · Proliferation", "desc": "Unsupervised programme found by NMF without time labels. Top genes: TOP2A, MKI67, RRM2, TPX2, TYMS, NCAPG, BIRC5, TK1, CCNA2, NUSAP1. Programme names are an interpretation of the top genes.", "genes": ["TOP2A", "MKI67", "RRM2", "TPX2", "TYMS", "NCAPG", "BIRC5", "TK1", "CCNA2", "NUSAP1", "PRC1", "CEP55", "FOXM1", "STMN1", "MYBL2", "KIF11", "FAM111B", "CDCA5", "SPAG5", "HMMR", "FANCI", "ESCO2", "CASC5", "KIF4A", "CENPF"], "stats": [["SHAP top-30 genes in programme", "0"]]}, {"id": "NMF9", "type": "nmf", "name": "NMF9 · Junctional epithelium", "desc": "Unsupervised programme found by NMF without time labels. Top genes: ITGA2, SVIL, DSP, PPL, GPRC5A, MYO5B, CLDN4, EMP1, CLIP1, MAP2. Programme names are an interpretation of the top genes.", "genes": ["ITGA2", "SVIL", "DSP", "PPL", "GPRC5A", "MYO5B", "CLDN4", "EMP1", "CLIP1", "MAP2", "TNFRSF12A", "MET", "DSG2", "KRT80", "MACF1", "ELF3", "USP53", "MAP1B", "MLLT4", "FAM129B", "CAMSAP1", "CGN", "PRSS8", "ANXA2", "LIPH"], "stats": [["SHAP top-30 genes in programme", "3"]]}, {"id": "NMF10", "type": "nmf", "name": "NMF10 · Monocyte / macrophage", "desc": "Unsupervised programme found by NMF without time labels. Top genes: SLC16A10, FNIP2, SEMA3C, SLC11A1, LY9, BASP1, SLAMF7, SDS, CD109, ATP13A3. Programme names are an interpretation of the top genes.", "genes": ["SLC16A10", "FNIP2", "SEMA3C", "SLC11A1", "LY9", "BASP1", "SLAMF7", "SDS", "CD109", "ATP13A3", "CTSL", "UPP1", "NRIP3", "TBC1D2", "PLIN2", "MMP19", "C5AR1", "PPAP2B", "FGR", "ZFYVE16", "ITGAX", "BCAT1", "PLA2G7", "SOAT1", "RAB20"], "stats": [["SHAP top-30 genes in programme", "0"]]}, {"id": "NMF11", "type": "nmf", "name": "NMF11 · Interferon response", "desc": "Unsupervised programme found by NMF without time labels. Top genes: RSAD2, IFIT3, IFIT2, GBP1, IFIT1, GBP5, GBP4, OASL, ISG15, APOBEC3A. Programme names are an interpretation of the top genes.", "genes": ["RSAD2", "IFIT3", "IFIT2", "GBP1", "IFIT1", "GBP5", "GBP4", "OASL", "ISG15", "APOBEC3A", "MX1", "SAMD9", "SAMD9L", "MX2", "HERC5", "OAS3", "XAF1", "STAT1", "OAS2", "TAP1", "PARP14", "OAS1", "IFI44L", "TFEC", "RNF213"], "stats": [["SHAP top-30 genes in programme", "0"]]}, {"id": "NMF12", "type": "nmf", "name": "NMF12 · Secretory lactocyte", "desc": "Unsupervised programme found by NMF without time labels. Top genes: LALBA, CSN2, PLIN2, CSN3, CSN1S1, XDH, B4GALT1, FASN, BTN1A1, HSP90AA1. Programme names are an interpretation of the top genes.", "genes": ["LALBA", "CSN2", "PLIN2", "CSN3", "CSN1S1", "XDH", "B4GALT1", "FASN", "BTN1A1", "HSP90AA1", "UBB", "B2M", "SSR4", "CLU", "ACTG1", "XBP1", "THRSP", "LYZ", "H3F3B", "IVNS1ABP", "HSPA5", "CITED2", "SEC61A1", "RAI14", "SCD"], "stats": [["SHAP top-30 genes in programme", "9"]]}, {"id": "cur_casein_secretion", "type": "curated", "name": "Casein secretion", "desc": "Hand-picked gene set. Masking its 4 genes costs 0.0697 R² (above the random 5-gene control, 97.5th percentile 0.030).", "genes": ["CSN1S1", "CSN2", "CSN3", "LALBA"], "stats": [["R² lost when masked", "0.0697"], ["Share of model R²", "11%"], ["Control (97.5th pct)", "0.030"]], "checks": [["Beats random-gene control", "pass"]]}, {"id": "CSN1S1", "type": "gene", "name": "CSN1S1", "desc": "Curated-programme gene."}, {"id": "CSN2", "type": "gene", "name": "CSN2", "desc": "Ranked #7 by SHAP for the lactation clock. Raising it moves predictions later.", "stats": [["SHAP rank", "#7 of 1,518"], ["Effect of +1 SD", "0.057 log-days (~6% later)"], ["NMF programmes", "NMF2, NMF12"], ["Curated programme", "Casein secretion"]], "checks": [["Validated on held-out mothers", "pass"], ["Beats the permutation null", "pass"], ["Explanation is faithful (masking test)", "pass"], ["Explanation passes the randomization check", "pass"], ["Direction corroborated by an NMF programme", "pass"]], "trust": 5, "rank": 7}, {"id": "CSN3", "type": "gene", "name": "CSN3", "desc": "Ranked #18 by SHAP for the lactation clock. Raising it moves predictions later.", "stats": [["SHAP rank", "#18 of 1,518"], ["Effect of +1 SD", "0.047 log-days (~5% later)"], ["NMF programmes", "NMF2, NMF7, NMF12"], ["Curated programme", "Casein secretion"]], "checks": [["Validated on held-out mothers", "pass"], ["Beats the permutation null", "pass"], ["Explanation is faithful (masking test)", "pass"], ["Explanation passes the randomization check", "pass"], ["Direction corroborated by an NMF programme", "pass"]], "trust": 5, "rank": 18}, {"id": "LALBA", "type": "gene", "name": "LALBA", "desc": "Ranked #16 by SHAP for the lactation clock. Raising it moves predictions later.", "stats": [["SHAP rank", "#16 of 1,518"], ["Effect of +1 SD", "0.050 log-days (~5% later)"], ["NMF programmes", "NMF2, NMF7, NMF12"], ["Curated programme", "Casein secretion"]], "checks": [["Validated on held-out mothers", "pass"], ["Beats the permutation null", "pass"], ["Explanation is faithful (masking test)", "pass"], ["Explanation passes the randomization check", "pass"], ["Direction corroborated by an NMF programme", "pass"]], "trust": 5, "rank": 16}, {"id": "cur_lipid_synthesis", "type": "curated", "name": "Lipid synthesis", "desc": "Hand-picked gene set. Masking its 5 genes costs 0.0417 R² (above the random 5-gene control, 97.5th percentile 0.030).", "genes": ["XDH", "BTN1A1", "PLIN2", "FASN", "SCD"], "stats": [["R² lost when masked", "0.0417"], ["Share of model R²", "7%"], ["Control (97.5th pct)", "0.030"]], "checks": [["Beats random-gene control", "pass"]]}, {"id": "XDH", "type": "gene", "name": "XDH", "desc": "Curated-programme gene."}, {"id": "BTN1A1", "type": "gene", "name": "BTN1A1", "desc": "Ranked #10 by SHAP for the lactation clock. Raising it moves predictions later.", "stats": [["SHAP rank", "#10 of 1,518"], ["Effect of +1 SD", "0.086 log-days (~9% later)"], ["NMF programmes", "NMF2, NMF12"], ["Curated programme", "Lipid synthesis"]], "checks": [["Validated on held-out mothers", "pass"], ["Beats the permutation null", "pass"], ["Explanation is faithful (masking test)", "pass"], ["Explanation passes the randomization check", "pass"], ["Direction corroborated by an NMF programme", "pass"]], "trust": 5, "rank": 10}, {"id": "PLIN2", "type": "gene", "name": "PLIN2", "desc": "Curated-programme gene."}, {"id": "FASN", "type": "gene", "name": "FASN", "desc": "Curated-programme gene."}, {"id": "SCD", "type": "gene", "name": "SCD", "desc": "Ranked #14 by SHAP for the lactation clock. Raising it moves predictions later.", "stats": [["SHAP rank", "#14 of 1,518"], ["Effect of +1 SD", "0.033 log-days (~3% later)"], ["NMF programmes", "NMF12"], ["Curated programme", "Lipid synthesis"]], "checks": [["Validated on held-out mothers", "pass"], ["Beats the permutation null", "pass"], ["Explanation is faithful (masking test)", "pass"], ["Explanation passes the randomization check", "pass"], ["Direction corroborated by an NMF programme", "pass"]], "trust": 5, "rank": 14}, {"id": "cur_hmo_glycosylation", "type": "curated", "name": "HMO glycosylation", "desc": "Hand-picked gene set. Masking its 6 genes costs 0.0036 R² (within the random 5-gene control, 97.5th percentile 0.030).", "genes": ["B4GALT1", "ST3GAL1", "FUT2", "FUT3", "B3GNT2", "ST6GAL1"], "stats": [["R² lost when masked", "0.0036"], ["Share of model R²", "1%"], ["Control (97.5th pct)", "0.030"]], "checks": [["Beats random-gene control", "fail"]]}, {"id": "B4GALT1", "type": "gene", "name": "B4GALT1", "desc": "Curated-programme gene."}, {"id": "ST3GAL1", "type": "gene", "name": "ST3GAL1", "desc": "Curated-programme gene."}, {"id": "FUT2", "type": "gene", "name": "FUT2", "desc": "Curated-programme gene."}, {"id": "FUT3", "type": "gene", "name": "FUT3", "desc": "Curated-programme gene."}, {"id": "B3GNT2", "type": "gene", "name": "B3GNT2", "desc": "Curated-programme gene."}, {"id": "ST6GAL1", "type": "gene", "name": "ST6GAL1", "desc": "Curated-programme gene."}, {"id": "cur_secretory_machinery", "type": "curated", "name": "Secretory machinery", "desc": "Hand-picked gene set. Masking its 5 genes costs 0.0046 R² (within the random 5-gene control, 97.5th percentile 0.030).", "genes": ["SEC61A1", "SSR4", "XBP1", "HSPA5", "SEC11C"], "stats": [["R² lost when masked", "0.0046"], ["Share of model R²", "1%"], ["Control (97.5th pct)", "0.030"]], "checks": [["Beats random-gene control", "fail"]]}, {"id": "SEC61A1", "type": "gene", "name": "SEC61A1", "desc": "Curated-programme gene."}, {"id": "SSR4", "type": "gene", "name": "SSR4", "desc": "Ranked #28 by SHAP for the lactation clock. Direction not tested (counterfactual test covered the top 20).", "stats": [["SHAP rank", "#28 of 1,518"], ["NMF programmes", "NMF12"], ["Curated programme", "Secretory machinery"]], "checks": [["Validated on held-out mothers", "pass"], ["Beats the permutation null", "pass"], ["Explanation is faithful (masking test)", "pass"], ["Explanation passes the randomization check", "pass"], ["Direction corroborated by an NMF programme", "not run"]], "trust": 4, "rank": 28}, {"id": "XBP1", "type": "gene", "name": "XBP1", "desc": "Curated-programme gene."}, {"id": "HSPA5", "type": "gene", "name": "HSPA5", "desc": "Ranked #19 by SHAP for the lactation clock. Raising it moves predictions earlier.", "stats": [["SHAP rank", "#19 of 1,518"], ["Effect of +1 SD", "−0.020 log-days (~2% earlier)"], ["NMF programmes", "NMF12"], ["Curated programme", "Secretory machinery"]], "checks": [["Validated on held-out mothers", "pass"], ["Beats the permutation null", "pass"], ["Explanation is faithful (masking test)", "pass"], ["Explanation passes the randomization check", "pass"], ["Direction corroborated by an NMF programme", "fail"]], "trust": 4, "rank": 19}, {"id": "SEC11C", "type": "gene", "name": "SEC11C", "desc": "Curated-programme gene."}, {"id": "cur_stress_response", "type": "curated", "name": "Stress response", "desc": "Hand-picked gene set. Masking its 5 genes costs 0.0001 R² (within the random 5-gene control, 97.5th percentile 0.030).", "genes": ["JUN", "FOS", "HSPA1A", "DDIT3", "JUNB"], "stats": [["R² lost when masked", "0.0001"], ["Share of model R²", "0%"], ["Control (97.5th pct)", "0.030"]], "checks": [["Beats random-gene control", "fail"]]}, {"id": "JUN", "type": "gene", "name": "JUN", "desc": "Curated-programme gene."}, {"id": "FOS", "type": "gene", "name": "FOS", "desc": "Curated-programme gene."}, {"id": "HSPA1A", "type": "gene", "name": "HSPA1A", "desc": "Curated-programme gene."}, {"id": "DDIT3", "type": "gene", "name": "DDIT3", "desc": "Curated-programme gene."}, {"id": "JUNB", "type": "gene", "name": "JUNB", "desc": "Curated-programme gene."}, {"id": "cur_immune_signalling", "type": "curated", "name": "Immune signalling", "desc": "Hand-picked gene set. Masking its 5 genes costs 0.2633 R² (above the random 5-gene control, 97.5th percentile 0.030).", "genes": ["CD74", "HLA-DRA", "B2M", "LYZ", "IL1B"], "stats": [["R² lost when masked", "0.2633"], ["Share of model R²", "43%"], ["Control (97.5th pct)", "0.030"]], "checks": [["Beats random-gene control", "pass"]]}, {"id": "CD74", "type": "gene", "name": "CD74", "desc": "Ranked #9 by SHAP for the lactation clock. Raising it moves predictions earlier.", "stats": [["SHAP rank", "#9 of 1,518"], ["Effect of +1 SD", "−0.023 log-days (~2% earlier)"], ["NMF programmes", "NMF6, NMF7"], ["Curated programme", "Immune signalling"]], "checks": [["Validated on held-out mothers", "pass"], ["Beats the permutation null", "pass"], ["Explanation is faithful (masking test)", "pass"], ["Explanation passes the randomization check", "pass"], ["Direction corroborated by an NMF programme", "pass"]], "trust": 5, "rank": 9}, {"id": "HLA-DRA", "type": "gene", "name": "HLA-DRA", "desc": "Ranked #3 by SHAP for the lactation clock. Raising it moves predictions earlier.", "stats": [["SHAP rank", "#3 of 1,518"], ["Effect of +1 SD", "−0.062 log-days (~6% earlier)"], ["NMF programmes", "NMF6, NMF7"], ["Curated programme", "Immune signalling"]], "checks": [["Validated on held-out mothers", "pass"], ["Beats the permutation null", "pass"], ["Explanation is faithful (masking test)", "pass"], ["Explanation passes the randomization check", "pass"], ["Direction corroborated by an NMF programme", "pass"]], "trust": 5, "rank": 3}, {"id": "B2M", "type": "gene", "name": "B2M", "desc": "Ranked #5 by SHAP for the lactation clock. Raising it moves predictions later.", "stats": [["SHAP rank", "#5 of 1,518"], ["Effect of +1 SD", "0.078 log-days (~8% later)"], ["NMF programmes", "NMF2, NMF7, NMF12"], ["Curated programme", "Immune signalling"]], "checks": [["Validated on held-out mothers", "pass"], ["Beats the permutation null", "pass"], ["Explanation is faithful (masking test)", "pass"], ["Explanation passes the randomization check", "pass"], ["Direction corroborated by an NMF programme", "pass"]], "trust": 5, "rank": 5}, {"id": "LYZ", "type": "gene", "name": "LYZ", "desc": "Ranked #1 by SHAP for the lactation clock. Raising it moves predictions later.", "stats": [["SHAP rank", "#1 of 1,518"], ["Effect of +1 SD", "0.138 log-days (~15% later)"], ["NMF programmes", "NMF2, NMF12"], ["Curated programme", "Immune signalling"]], "checks": [["Validated on held-out mothers", "pass"], ["Beats the permutation null", "pass"], ["Explanation is faithful (masking test)", "pass"], ["Explanation passes the randomization check", "pass"], ["Direction corroborated by an NMF programme", "pass"]], "trust": 5, "rank": 1}, {"id": "IL1B", "type": "gene", "name": "IL1B", "desc": "Curated-programme gene."}, {"id": "HPGD", "type": "gene", "name": "HPGD", "desc": "Ranked #2 by SHAP for the lactation clock. Raising it moves predictions earlier.", "stats": [["SHAP rank", "#2 of 1,518"], ["Effect of +1 SD", "−0.200 log-days (~18% earlier)"], ["NMF programmes", "none"]], "checks": [["Validated on held-out mothers", "pass"], ["Beats the permutation null", "pass"], ["Explanation is faithful (masking test)", "pass"], ["Explanation passes the randomization check", "pass"], ["Direction corroborated by an NMF programme", "fail"]], "trust": 4, "rank": 2}, {"id": "SFRP1", "type": "gene", "name": "SFRP1", "desc": "Ranked #4 by SHAP for the lactation clock. Raising it moves predictions earlier.", "stats": [["SHAP rank", "#4 of 1,518"], ["Effect of +1 SD", "−0.087 log-days (~8% earlier)"], ["NMF programmes", "NMF7"]], "checks": [["Validated on held-out mothers", "pass"], ["Beats the permutation null", "pass"], ["Explanation is faithful (masking test)", "pass"], ["Explanation passes the randomization check", "pass"], ["Direction corroborated by an NMF programme", "pass"]], "trust": 5, "rank": 4}, {"id": "KRT15", "type": "gene", "name": "KRT15", "desc": "Ranked #6 by SHAP for the lactation clock. Raising it moves predictions earlier.", "stats": [["SHAP rank", "#6 of 1,518"], ["Effect of +1 SD", "−0.046 log-days (~5% earlier)"], ["NMF programmes", "NMF7"]], "checks": [["Validated on held-out mothers", "pass"], ["Beats the permutation null", "pass"], ["Explanation is faithful (masking test)", "pass"], ["Explanation passes the randomization check", "pass"], ["Direction corroborated by an NMF programme", "pass"]], "trust": 5, "rank": 6}, {"id": "KRT80", "type": "gene", "name": "KRT80", "desc": "Ranked #8 by SHAP for the lactation clock. Raising it moves predictions later.", "stats": [["SHAP rank", "#8 of 1,518"], ["Effect of +1 SD", "0.134 log-days (~14% later)"], ["NMF programmes", "NMF9"]], "checks": [["Validated on held-out mothers", "pass"], ["Beats the permutation null", "pass"], ["Explanation is faithful (masking test)", "pass"], ["Explanation passes the randomization check", "pass"], ["Direction corroborated by an NMF programme", "pass"]], "trust": 5, "rank": 8}, {"id": "C3", "type": "gene", "name": "C3", "desc": "Ranked #11 by SHAP for the lactation clock. Raising it moves predictions earlier.", "stats": [["SHAP rank", "#11 of 1,518"], ["Effect of +1 SD", "−0.023 log-days (~2% earlier)"], ["NMF programmes", "NMF7"]], "checks": [["Validated on held-out mothers", "pass"], ["Beats the permutation null", "pass"], ["Explanation is faithful (masking test)", "pass"], ["Explanation passes the randomization check", "pass"], ["Direction corroborated by an NMF programme", "pass"]], "trust": 5, "rank": 11}, {"id": "ANXA2", "type": "gene", "name": "ANXA2", "desc": "Ranked #12 by SHAP for the lactation clock. Raising it moves predictions later.", "stats": [["SHAP rank", "#12 of 1,518"], ["Effect of +1 SD", "0.040 log-days (~4% later)"], ["NMF programmes", "NMF9"]], "checks": [["Validated on held-out mothers", "pass"], ["Beats the permutation null", "pass"], ["Explanation is faithful (masking test)", "pass"], ["Explanation passes the randomization check", "pass"], ["Direction corroborated by an NMF programme", "pass"]], "trust": 5, "rank": 12}, {"id": "S100A10", "type": "gene", "name": "S100A10", "desc": "Ranked #13 by SHAP for the lactation clock. Raising it moves predictions later.", "stats": [["SHAP rank", "#13 of 1,518"], ["Effect of +1 SD", "0.088 log-days (~9% later)"], ["NMF programmes", "none"]], "checks": [["Validated on held-out mothers", "pass"], ["Beats the permutation null", "pass"], ["Explanation is faithful (masking test)", "pass"], ["Explanation passes the randomization check", "pass"], ["Direction corroborated by an NMF programme", "fail"]], "trust": 4, "rank": 13}, {"id": "IL7R", "type": "gene", "name": "IL7R", "desc": "Ranked #15 by SHAP for the lactation clock. Raising it moves predictions later.", "stats": [["SHAP rank", "#15 of 1,518"], ["Effect of +1 SD", "0.017 log-days (~2% later)"], ["NMF programmes", "none"]], "checks": [["Validated on held-out mothers", "pass"], ["Beats the permutation null", "pass"], ["Explanation is faithful (masking test)", "pass"], ["Explanation passes the randomization check", "pass"], ["Direction corroborated by an NMF programme", "fail"]], "trust": 4, "rank": 15}, {"id": "HSPB1", "type": "gene", "name": "HSPB1", "desc": "Ranked #17 by SHAP for the lactation clock. Raising it moves predictions later.", "stats": [["SHAP rank", "#17 of 1,518"], ["Effect of +1 SD", "0.027 log-days (~3% later)"], ["NMF programmes", "none"]], "checks": [["Validated on held-out mothers", "pass"], ["Beats the permutation null", "pass"], ["Explanation is faithful (masking test)", "pass"], ["Explanation passes the randomization check", "pass"], ["Direction corroborated by an NMF programme", "fail"]], "trust": 4, "rank": 17}, {"id": "CLDN4", "type": "gene", "name": "CLDN4", "desc": "Ranked #20 by SHAP for the lactation clock. Raising it moves predictions later.", "stats": [["SHAP rank", "#20 of 1,518"], ["Effect of +1 SD", "0.024 log-days (~2% later)"], ["NMF programmes", "NMF9"]], "checks": [["Validated on held-out mothers", "pass"], ["Beats the permutation null", "pass"], ["Explanation is faithful (masking test)", "pass"], ["Explanation passes the randomization check", "pass"], ["Direction corroborated by an NMF programme", "pass"]], "trust": 5, "rank": 20}, {"id": "HLA-DPB1", "type": "gene", "name": "HLA-DPB1", "desc": "Ranked #21 by SHAP for the lactation clock. Direction not tested (counterfactual test covered the top 20).", "stats": [["SHAP rank", "#21 of 1,518"], ["NMF programmes", "NMF6"]], "checks": [["Validated on held-out mothers", "pass"], ["Beats the permutation null", "pass"], ["Explanation is faithful (masking test)", "pass"], ["Explanation passes the randomization check", "pass"], ["Direction corroborated by an NMF programme", "not run"]], "trust": 4, "rank": 21}, {"id": "TLR2", "type": "gene", "name": "TLR2", "desc": "Ranked #22 by SHAP for the lactation clock. Direction not tested (counterfactual test covered the top 20).", "stats": [["SHAP rank", "#22 of 1,518"], ["NMF programmes", "none"]], "checks": [["Validated on held-out mothers", "pass"], ["Beats the permutation null", "pass"], ["Explanation is faithful (masking test)", "pass"], ["Explanation passes the randomization check", "pass"], ["Direction corroborated by an NMF programme", "not run"]], "trust": 4, "rank": 22}, {"id": "MCAM", "type": "gene", "name": "MCAM", "desc": "Ranked #23 by SHAP for the lactation clock. Direction not tested (counterfactual test covered the top 20).", "stats": [["SHAP rank", "#23 of 1,518"], ["NMF programmes", "none"]], "checks": [["Validated on held-out mothers", "pass"], ["Beats the permutation null", "pass"], ["Explanation is faithful (masking test)", "pass"], ["Explanation passes the randomization check", "pass"], ["Direction corroborated by an NMF programme", "not run"]], "trust": 4, "rank": 23}, {"id": "MT-ND4", "type": "gene", "name": "MT-ND4", "desc": "Ranked #24 by SHAP for the lactation clock. Direction not tested (counterfactual test covered the top 20). Mitochondrial: its share differs between mothers, so it may reflect sample quality.", "stats": [["SHAP rank", "#24 of 1,518"], ["NMF programmes", "NMF2"]], "checks": [["Validated on held-out mothers", "pass"], ["Beats the permutation null", "pass"], ["Explanation is faithful (masking test)", "pass"], ["Explanation passes the randomization check", "pass"], ["Direction corroborated by an NMF programme", "not run"], ["Possible confound: mitochondrial share varies by mother", "flag"]], "trust": 2, "rank": 24}, {"id": "MT2A", "type": "gene", "name": "MT2A", "desc": "Ranked #25 by SHAP for the lactation clock. Direction not tested (counterfactual test covered the top 20).", "stats": [["SHAP rank", "#25 of 1,518"], ["NMF programmes", "NMF3"]], "checks": [["Validated on held-out mothers", "pass"], ["Beats the permutation null", "pass"], ["Explanation is faithful (masking test)", "pass"], ["Explanation passes the randomization check", "pass"], ["Direction corroborated by an NMF programme", "not run"]], "trust": 4, "rank": 25}, {"id": "STEAP4", "type": "gene", "name": "STEAP4", "desc": "Ranked #26 by SHAP for the lactation clock. Direction not tested (counterfactual test covered the top 20).", "stats": [["SHAP rank", "#26 of 1,518"], ["NMF programmes", "none"]], "checks": [["Validated on held-out mothers", "pass"], ["Beats the permutation null", "pass"], ["Explanation is faithful (masking test)", "pass"], ["Explanation passes the randomization check", "pass"], ["Direction corroborated by an NMF programme", "not run"]], "trust": 4, "rank": 26}, {"id": "CRYAB", "type": "gene", "name": "CRYAB", "desc": "Ranked #27 by SHAP for the lactation clock. Direction not tested (counterfactual test covered the top 20).", "stats": [["SHAP rank", "#27 of 1,518"], ["NMF programmes", "NMF7"]], "checks": [["Validated on held-out mothers", "pass"], ["Beats the permutation null", "pass"], ["Explanation is faithful (masking test)", "pass"], ["Explanation passes the randomization check", "pass"], ["Direction corroborated by an NMF programme", "not run"]], "trust": 4, "rank": 27}, {"id": "KRT19", "type": "gene", "name": "KRT19", "desc": "Ranked #29 by SHAP for the lactation clock. Direction not tested (counterfactual test covered the top 20).", "stats": [["SHAP rank", "#29 of 1,518"], ["NMF programmes", "none"]], "checks": [["Validated on held-out mothers", "pass"], ["Beats the permutation null", "pass"], ["Explanation is faithful (masking test)", "pass"], ["Explanation passes the randomization check", "pass"], ["Direction corroborated by an NMF programme", "not run"]], "trust": 4, "rank": 29}, {"id": "MT-ND5", "type": "gene", "name": "MT-ND5", "desc": "Ranked #30 by SHAP for the lactation clock. Direction not tested (counterfactual test covered the top 20). Mitochondrial: its share differs between mothers, so it may reflect sample quality.", "stats": [["SHAP rank", "#30 of 1,518"], ["NMF programmes", "NMF2"]], "checks": [["Validated on held-out mothers", "pass"], ["Beats the permutation null", "pass"], ["Explanation is faithful (masking test)", "pass"], ["Explanation passes the randomization check", "pass"], ["Direction corroborated by an NMF programme", "not run"], ["Possible confound: mitochondrial share varies by mother", "flag"]], "trust": 2, "rank": 30}], "links": [{"a": "ds", "b": "epi", "rel": "majority of milk cells are lactocytes", "source": "literature", "trust": null, "status": "supported", "why": "Reported by Nyquist et al. 2022 for this dataset."}, {"a": "clock", "b": "ds", "rel": "trained on", "source": "model", "trust": 5, "status": "supported", "why": "Pipeline link."}, {"a": "clock_epi", "b": "epi", "rel": "restricted to", "source": "model", "trust": 5, "status": "supported", "why": "Pipeline link."}, {"a": "clock_epi", "b": "clock", "rel": "reproduces", "source": "model", "trust": 2, "status": "supported", "why": "R² 0.56 within epithelial cells vs 0.53 for all cells; permutation null not run for this subset."}, {"a": "donor_clf", "b": "clock", "rel": "bounds leakage for", "source": "model", "trust": 3, "status": "supported", "why": "Mothers are identifiable (62% vs 16%), yet a leaky split adds only 0.11 R²."}, {"a": "NMF2", "b": "later", "rel": "programme leans toward", "source": "model", "trust": 4, "status": "supported", "why": "Its members among the SHAP top 30 (LYZ, B2M, CSN2, BTN1A1, LALBA, CSN3, MT-ND4, MT-ND5) mostly push predictions toward later lactation."}, {"a": "NMF7", "b": "early", "rel": "programme leans toward", "source": "model", "trust": 4, "status": "supported", "why": "Its members among the SHAP top 30 (HLA-DRA, SFRP1, B2M, KRT15, CD74, C3, LALBA, CSN3, CRYAB) mostly push predictions toward early lactation."}, {"a": "NMF9", "b": "later", "rel": "programme leans toward", "source": "model", "trust": 4, "status": "supported", "why": "Its members among the SHAP top 30 (KRT80, ANXA2, CLDN4) mostly push predictions toward later lactation."}, {"a": "NMF12", "b": "later", "rel": "programme leans toward", "source": "model", "trust": 4, "status": "supported", "why": "Its members among the SHAP top 30 (LYZ, B2M, CSN2, BTN1A1, SCD, LALBA, CSN3, HSPA5, SSR4) mostly push predictions toward later lactation."}, {"a": "cur_casein_secretion", "b": "clock", "rel": "load-bearing for", "source": "model", "trust": 4, "status": "supported", "why": "Ablation: 0.0697 R² lost vs control 0.030."}, {"a": "CSN1S1", "b": "cur_casein_secretion", "rel": "member of", "source": "literature", "trust": null, "status": "supported", "why": "Curated gene-set definition."}, {"a": "CSN2", "b": "cur_casein_secretion", "rel": "member of", "source": "literature", "trust": null, "status": "supported", "why": "Curated gene-set definition."}, {"a": "CSN3", "b": "cur_casein_secretion", "rel": "member of", "source": "literature", "trust": null, "status": "supported", "why": "Curated gene-set definition."}, {"a": "LALBA", "b": "cur_casein_secretion", "rel": "member of", "source": "literature", "trust": null, "status": "supported", "why": "Curated gene-set definition."}, {"a": "cur_lipid_synthesis", "b": "clock", "rel": "load-bearing for", "source": "model", "trust": 4, "status": "supported", "why": "Ablation: 0.0417 R² lost vs control 0.030."}, {"a": "XDH", "b": "cur_lipid_synthesis", "rel": "member of", "source": "literature", "trust": null, "status": "supported", "why": "Curated gene-set definition."}, {"a": "BTN1A1", "b": "cur_lipid_synthesis", "rel": "member of", "source": "literature", "trust": null, "status": "supported", "why": "Curated gene-set definition."}, {"a": "PLIN2", "b": "cur_lipid_synthesis", "rel": "member of", "source": "literature", "trust": null, "status": "supported", "why": "Curated gene-set definition."}, {"a": "FASN", "b": "cur_lipid_synthesis", "rel": "member of", "source": "literature", "trust": null, "status": "supported", "why": "Curated gene-set definition."}, {"a": "SCD", "b": "cur_lipid_synthesis", "rel": "member of", "source": "literature", "trust": null, "status": "supported", "why": "Curated gene-set definition."}, {"a": "cur_hmo_glycosylation", "b": "clock", "rel": "not load-bearing for", "source": "model", "trust": 1, "status": "not supported", "why": "Ablation: 0.0036 R² lost vs control 0.030."}, {"a": "B4GALT1", "b": "cur_hmo_glycosylation", "rel": "member of", "source": "literature", "trust": null, "status": "supported", "why": "Curated gene-set definition."}, {"a": "ST3GAL1", "b": "cur_hmo_glycosylation", "rel": "member of", "source": "literature", "trust": null, "status": "supported", "why": "Curated gene-set definition."}, {"a": "FUT2", "b": "cur_hmo_glycosylation", "rel": "member of", "source": "literature", "trust": null, "status": "supported", "why": "Curated gene-set definition."}, {"a": "FUT3", "b": "cur_hmo_glycosylation", "rel": "member of", "source": "literature", "trust": null, "status": "supported", "why": "Curated gene-set definition."}, {"a": "B3GNT2", "b": "cur_hmo_glycosylation", "rel": "member of", "source": "literature", "trust": null, "status": "supported", "why": "Curated gene-set definition."}, {"a": "ST6GAL1", "b": "cur_hmo_glycosylation", "rel": "member of", "source": "literature", "trust": null, "status": "supported", "why": "Curated gene-set definition."}, {"a": "cur_secretory_machinery", "b": "clock", "rel": "not load-bearing for", "source": "model", "trust": 1, "status": "not supported", "why": "Ablation: 0.0046 R² lost vs control 0.030."}, {"a": "SEC61A1", "b": "cur_secretory_machinery", "rel": "member of", "source": "literature", "trust": null, "status": "supported", "why": "Curated gene-set definition."}, {"a": "SSR4", "b": "cur_secretory_machinery", "rel": "member of", "source": "literature", "trust": null, "status": "supported", "why": "Curated gene-set definition."}, {"a": "XBP1", "b": "cur_secretory_machinery", "rel": "member of", "source": "literature", "trust": null, "status": "supported", "why": "Curated gene-set definition."}, {"a": "HSPA5", "b": "cur_secretory_machinery", "rel": "member of", "source": "literature", "trust": null, "status": "supported", "why": "Curated gene-set definition."}, {"a": "SEC11C", "b": "cur_secretory_machinery", "rel": "member of", "source": "literature", "trust": null, "status": "supported", "why": "Curated gene-set definition."}, {"a": "cur_stress_response", "b": "clock", "rel": "not load-bearing for", "source": "model", "trust": 1, "status": "not supported", "why": "Ablation: 0.0001 R² lost vs control 0.030."}, {"a": "JUN", "b": "cur_stress_response", "rel": "member of", "source": "literature", "trust": null, "status": "supported", "why": "Curated gene-set definition."}, {"a": "FOS", "b": "cur_stress_response", "rel": "member of", "source": "literature", "trust": null, "status": "supported", "why": "Curated gene-set definition."}, {"a": "HSPA1A", "b": "cur_stress_response", "rel": "member of", "source": "literature", "trust": null, "status": "supported", "why": "Curated gene-set definition."}, {"a": "DDIT3", "b": "cur_stress_response", "rel": "member of", "source": "literature", "trust": null, "status": "supported", "why": "Curated gene-set definition."}, {"a": "JUNB", "b": "cur_stress_response", "rel": "member of", "source": "literature", "trust": null, "status": "supported", "why": "Curated gene-set definition."}, {"a": "cur_immune_signalling", "b": "clock", "rel": "load-bearing for", "source": "model", "trust": 4, "status": "supported", "why": "Ablation: 0.2633 R² lost vs control 0.030."}, {"a": "CD74", "b": "cur_immune_signalling", "rel": "member of", "source": "literature", "trust": null, "status": "supported", "why": "Curated gene-set definition."}, {"a": "HLA-DRA", "b": "cur_immune_signalling", "rel": "member of", "source": "literature", "trust": null, "status": "supported", "why": "Curated gene-set definition."}, {"a": "B2M", "b": "cur_immune_signalling", "rel": "member of", "source": "literature", "trust": null, "status": "supported", "why": "Curated gene-set definition."}, {"a": "LYZ", "b": "cur_immune_signalling", "rel": "member of", "source": "literature", "trust": null, "status": "supported", "why": "Curated gene-set definition."}, {"a": "IL1B", "b": "cur_immune_signalling", "rel": "member of", "source": "literature", "trust": null, "status": "supported", "why": "Curated gene-set definition."}, {"a": "LYZ", "b": "later", "rel": "pushes toward", "source": "model", "trust": 5, "status": "supported", "why": "Counterfactual 0.138 log-days per +1 SD; corroborated by NMF2, NMF12"}, {"a": "LYZ", "b": "NMF2", "rel": "member of", "source": "model", "trust": 4, "status": "supported", "why": "Rank 8 of 25 in NMF2."}, {"a": "LYZ", "b": "NMF12", "rel": "member of", "source": "model", "trust": 3, "status": "supported", "why": "Rank 18 of 25 in NMF12."}, {"a": "HPGD", "b": "early", "rel": "pushes toward", "source": "model", "trust": 4, "status": "supported", "why": "Counterfactual −0.200 log-days per +1 SD; no agreeing NMF programme"}, {"a": "HLA-DRA", "b": "early", "rel": "pushes toward", "source": "model", "trust": 5, "status": "supported", "why": "Counterfactual −0.062 log-days per +1 SD; corroborated by NMF7"}, {"a": "HLA-DRA", "b": "NMF6", "rel": "member of", "source": "model", "trust": 3, "status": "supported", "why": "Rank 16 of 25 in NMF6."}, {"a": "HLA-DRA", "b": "NMF7", "rel": "member of", "source": "model", "trust": 3, "status": "supported", "why": "Rank 17 of 25 in NMF7."}, {"a": "SFRP1", "b": "early", "rel": "pushes toward", "source": "model", "trust": 5, "status": "supported", "why": "Counterfactual −0.087 log-days per +1 SD; corroborated by NMF7"}, {"a": "SFRP1", "b": "NMF7", "rel": "member of", "source": "model", "trust": 4, "status": "supported", "why": "Rank 4 of 25 in NMF7."}, {"a": "B2M", "b": "later", "rel": "pushes toward", "source": "model", "trust": 5, "status": "supported", "why": "Counterfactual 0.078 log-days per +1 SD; corroborated by NMF2, NMF12"}, {"a": "B2M", "b": "NMF2", "rel": "member of", "source": "model", "trust": 3, "status": "supported", "why": "Rank 17 of 25 in NMF2."}, {"a": "B2M", "b": "NMF7", "rel": "member of", "source": "model", "trust": 3, "status": "supported", "why": "Rank 13 of 25 in NMF7."}, {"a": "B2M", "b": "NMF12", "rel": "member of", "source": "model", "trust": 3, "status": "supported", "why": "Rank 12 of 25 in NMF12."}, {"a": "KRT15", "b": "early", "rel": "pushes toward", "source": "model", "trust": 5, "status": "supported", "why": "Counterfactual −0.046 log-days per +1 SD; corroborated by NMF7"}, {"a": "KRT15", "b": "NMF7", "rel": "member of", "source": "model", "trust": 3, "status": "supported", "why": "Rank 14 of 25 in NMF7."}, {"a": "CSN2", "b": "later", "rel": "pushes toward", "source": "model", "trust": 5, "status": "supported", "why": "Counterfactual 0.057 log-days per +1 SD; corroborated by NMF2, NMF12"}, {"a": "CSN2", "b": "NMF2", "rel": "member of", "source": "model", "trust": 4, "status": "supported", "why": "Rank 2 of 25 in NMF2."}, {"a": "CSN2", "b": "NMF12", "rel": "member of", "source": "model", "trust": 4, "status": "supported", "why": "Rank 2 of 25 in NMF12."}, {"a": "KRT80", "b": "later", "rel": "pushes toward", "source": "model", "trust": 5, "status": "supported", "why": "Counterfactual 0.134 log-days per +1 SD; corroborated by NMF9"}, {"a": "KRT80", "b": "NMF9", "rel": "member of", "source": "model", "trust": 3, "status": "supported", "why": "Rank 14 of 25 in NMF9."}, {"a": "CD74", "b": "early", "rel": "pushes toward", "source": "model", "trust": 5, "status": "supported", "why": "Counterfactual −0.023 log-days per +1 SD; corroborated by NMF7"}, {"a": "CD74", "b": "NMF6", "rel": "member of", "source": "model", "trust": 3, "status": "supported", "why": "Rank 21 of 25 in NMF6."}, {"a": "CD74", "b": "NMF7", "rel": "member of", "source": "model", "trust": 4, "status": "supported", "why": "Rank 9 of 25 in NMF7."}, {"a": "BTN1A1", "b": "later", "rel": "pushes toward", "source": "model", "trust": 5, "status": "supported", "why": "Counterfactual 0.086 log-days per +1 SD; corroborated by NMF2, NMF12"}, {"a": "BTN1A1", "b": "NMF2", "rel": "member of", "source": "model", "trust": 3, "status": "supported", "why": "Rank 15 of 25 in NMF2."}, {"a": "BTN1A1", "b": "NMF12", "rel": "member of", "source": "model", "trust": 4, "status": "supported", "why": "Rank 9 of 25 in NMF12."}, {"a": "C3", "b": "early", "rel": "pushes toward", "source": "model", "trust": 5, "status": "supported", "why": "Counterfactual −0.023 log-days per +1 SD; corroborated by NMF7"}, {"a": "C3", "b": "NMF7", "rel": "member of", "source": "model", "trust": 3, "status": "supported", "why": "Rank 11 of 25 in NMF7."}, {"a": "ANXA2", "b": "later", "rel": "pushes toward", "source": "model", "trust": 5, "status": "supported", "why": "Counterfactual 0.040 log-days per +1 SD; corroborated by NMF9"}, {"a": "ANXA2", "b": "NMF9", "rel": "member of", "source": "model", "trust": 3, "status": "supported", "why": "Rank 24 of 25 in NMF9."}, {"a": "S100A10", "b": "later", "rel": "pushes toward", "source": "model", "trust": 4, "status": "supported", "why": "Counterfactual 0.088 log-days per +1 SD; no agreeing NMF programme"}, {"a": "SCD", "b": "later", "rel": "pushes toward", "source": "model", "trust": 5, "status": "supported", "why": "Counterfactual 0.033 log-days per +1 SD; corroborated by NMF12"}, {"a": "SCD", "b": "NMF12", "rel": "member of", "source": "model", "trust": 3, "status": "supported", "why": "Rank 25 of 25 in NMF12."}, {"a": "IL7R", "b": "later", "rel": "pushes toward", "source": "model", "trust": 4, "status": "supported", "why": "Counterfactual 0.017 log-days per +1 SD; no agreeing NMF programme"}, {"a": "LALBA", "b": "later", "rel": "pushes toward", "source": "model", "trust": 5, "status": "supported", "why": "Counterfactual 0.050 log-days per +1 SD; corroborated by NMF2, NMF12"}, {"a": "LALBA", "b": "NMF2", "rel": "member of", "source": "model", "trust": 4, "status": "supported", "why": "Rank 1 of 25 in NMF2."}, {"a": "LALBA", "b": "NMF7", "rel": "member of", "source": "model", "trust": 3, "status": "supported", "why": "Rank 22 of 25 in NMF7."}, {"a": "LALBA", "b": "NMF12", "rel": "member of", "source": "model", "trust": 4, "status": "supported", "why": "Rank 1 of 25 in NMF12."}, {"a": "HSPB1", "b": "later", "rel": "pushes toward", "source": "model", "trust": 4, "status": "supported", "why": "Counterfactual 0.027 log-days per +1 SD; no agreeing NMF programme"}, {"a": "CSN3", "b": "later", "rel": "pushes toward", "source": "model", "trust": 5, "status": "supported", "why": "Counterfactual 0.047 log-days per +1 SD; corroborated by NMF2, NMF12"}, {"a": "CSN3", "b": "NMF2", "rel": "member of", "source": "model", "trust": 4, "status": "supported", "why": "Rank 3 of 25 in NMF2."}, {"a": "CSN3", "b": "NMF7", "rel": "member of", "source": "model", "trust": 3, "status": "supported", "why": "Rank 16 of 25 in NMF7."}, {"a": "CSN3", "b": "NMF12", "rel": "member of", "source": "model", "trust": 4, "status": "supported", "why": "Rank 4 of 25 in NMF12."}, {"a": "HSPA5", "b": "early", "rel": "pushes toward", "source": "model", "trust": 4, "status": "supported", "why": "Counterfactual −0.020 log-days per +1 SD; no agreeing NMF programme"}, {"a": "HSPA5", "b": "NMF12", "rel": "member of", "source": "model", "trust": 3, "status": "supported", "why": "Rank 21 of 25 in NMF12."}, {"a": "CLDN4", "b": "later", "rel": "pushes toward", "source": "model", "trust": 5, "status": "supported", "why": "Counterfactual 0.024 log-days per +1 SD; corroborated by NMF9"}, {"a": "CLDN4", "b": "NMF9", "rel": "member of", "source": "model", "trust": 4, "status": "supported", "why": "Rank 7 of 25 in NMF9."}, {"a": "HLA-DPB1", "b": "clock", "rel": "used by", "source": "model", "trust": 4, "status": "supported", "why": "SHAP rank #21; direction not tested."}, {"a": "HLA-DPB1", "b": "NMF6", "rel": "member of", "source": "model", "trust": 3, "status": "supported", "why": "Rank 13 of 25 in NMF6."}, {"a": "TLR2", "b": "clock", "rel": "used by", "source": "model", "trust": 4, "status": "supported", "why": "SHAP rank #22; direction not tested."}, {"a": "MCAM", "b": "clock", "rel": "used by", "source": "model", "trust": 4, "status": "supported", "why": "SHAP rank #23; direction not tested."}, {"a": "MT-ND4", "b": "clock", "rel": "used by", "source": "model", "trust": 2, "status": "supported", "why": "SHAP rank #24; direction not tested."}, {"a": "MT-ND4", "b": "NMF2", "rel": "member of", "source": "model", "trust": 4, "status": "supported", "why": "Rank 7 of 25 in NMF2."}, {"a": "MT2A", "b": "clock", "rel": "used by", "source": "model", "trust": 4, "status": "supported", "why": "SHAP rank #25; direction not tested."}, {"a": "MT2A", "b": "NMF3", "rel": "member of", "source": "model", "trust": 3, "status": "supported", "why": "Rank 11 of 25 in NMF3."}, {"a": "STEAP4", "b": "clock", "rel": "used by", "source": "model", "trust": 4, "status": "supported", "why": "SHAP rank #26; direction not tested."}, {"a": "CRYAB", "b": "clock", "rel": "used by", "source": "model", "trust": 4, "status": "supported", "why": "SHAP rank #27; direction not tested."}, {"a": "CRYAB", "b": "NMF7", "rel": "member of", "source": "model", "trust": 3, "status": "supported", "why": "Rank 24 of 25 in NMF7."}, {"a": "SSR4", "b": "clock", "rel": "used by", "source": "model", "trust": 4, "status": "supported", "why": "SHAP rank #28; direction not tested."}, {"a": "SSR4", "b": "NMF12", "rel": "member of", "source": "model", "trust": 3, "status": "supported", "why": "Rank 13 of 25 in NMF12."}, {"a": "KRT19", "b": "clock", "rel": "used by", "source": "model", "trust": 4, "status": "supported", "why": "SHAP rank #29; direction not tested."}, {"a": "MT-ND5", "b": "clock", "rel": "used by", "source": "model", "trust": 2, "status": "supported", "why": "SHAP rank #30; direction not tested."}, {"a": "MT-ND5", "b": "NMF2", "rel": "member of", "source": "model", "trust": 3, "status": "supported", "why": "Rank 13 of 25 in NMF2."}], "chains": [{"title": "Early milk carries a progenitor-like epithelium flagged by MHC-II and complement", "steps": [["Cells from early lactation are sampled in milk", "data", "supported", "SCP1671; median one mother per timepoint."], ["High SFRP1, KRT15, HLA-DRA, CD74 and C3 push the clock's predictions earlier", "model", "supported", "SHAP and counterfactuals; explanation faithful and passes the randomization check (r = 0.25)."], ["These genes co-occur in one unsupervised programme (NMF7)", "model", "supported", "NMF found it without time labels."], ["The programme marks progenitor-like epithelial cells", "inference", "untested", "An interpretation of the top genes; not tested against lineage markers here."], ["It recedes as lactation continues", "model", "weak", "Holds through early and mid lactation; past 200 days rests on three mothers."]]}, {"title": "Later milk shifts toward junctional and secretory lactocyte programmes", "steps": [["High KRT80, ANXA2, CLDN4 push predictions later", "model", "supported", "SHAP and counterfactuals."], ["They co-occur in a junctional programme (NMF9)", "model", "supported", "Unsupervised."], ["Casein, LALBA and BTN1A1 also push later and form a secretory programme (NMF12, NMF2)", "model", "supported", "Casein and lipid programmes also beat the random-gene control in ablation."], ["The shift reflects maturation of milk production", "inference", "untested", "Interpretation; not tested here."]]}, {"title": "Part of the 'immune' signal is secreted milk protein", "steps": [["LYZ is the top-ranked gene and pushes predictions later", "model", "supported", "SHAP rank #1."], ["LYZ loads with the caseins in NMF2, not with immune programmes", "model", "supported", "Unsupervised."], ["So ablating the curated 'immune signalling' set removes secretory signal too", "inference", "supported", "Why that set's ablation (0.26 R²) overstates immune-cell content."], ["Separating epithelial and immune sources of LYZ", "model", "untested", "Would need cell-type-resolved attribution."]]}, {"title": "From milk clock to perturbation readout", "steps": [["A per-cell early-to-late axis is learned from milk", "model", "supported", "R² 0.53 on held-out mothers."], ["The axis holds inside epithelial cells alone", "model", "supported", "R² 0.56; one fold weak; permutation null not run for this subset."], ["The axis transfers from milk cells to cultured lactocytes", "untested", "untested", "First experiment needed."], ["Compounds with known effects move cells along it as expected", "untested", "untested", "Second experiment needed."], ["The axis is usable as a screen readout", "untested", "untested", "Only after both tests above."]]}], "claims": [{"claim": "Milk-synthesis genes carry no information about lactational time", "a": ["My first run", "Ablating the lipid, HMO and secretory programmes cost almost nothing, and casein could not be tested."], "b": ["Corrected run", "A coverage check showed most of those programmes' genes had never entered the model. Once included, casein (0.07) and lipid (0.04) beat the random-gene control."], "status": "resolved", "settle": "Resolved: a feature-selection artefact. The ablation now reports genes in the model for every programme."}, {"claim": "Curated gene sets are a good readout of lactocyte state", "a": ["Common practice", "Scoring cells on hand-picked programmes."], "b": ["This analysis", "Six programme averages reach R² 0.15; individual genes reach 0.48."], "status": "contested", "settle": "Test programme scores against learned readouts on perturbation data."}, {"claim": "Lactocytes form a continuum of states", "a": ["Nyquist et al. 2022", "Lactocytes show a continuum of cell states with subtle transcriptional changes."], "b": ["This analysis", "Annotated cell types are recovered with 98% accuracy. That tests cell types, not lactocyte sub-states, so it neither supports nor contradicts the continuum."], "status": "open", "settle": "Test sub-state discreteness within epithelial cells (e.g. classifier confidence on lactocyte sub-clusters)."}, {"claim": "Mitochondrial genes mark later lactation", "a": ["SHAP", "MT-ND4 and MT-ND5 push predictions later."], "b": ["Data quality", "Mitochondrial share differs between mothers, so this may be sample quality."], "status": "open", "settle": "Re-fit without mitochondrial genes and check whether R² or the ranking changes."}, {"claim": "The clock reads late lactation", "a": ["The model", "It predicts days postpartum across the whole range."], "b": ["The design", "Only three mothers were sampled after 200 days, and the clock under-predicts there."], "status": "refuted", "settle": "More mothers sampled after six months."}], "cards": [{"q": "Is lactational time readable from milk cells?", "metric": "R² 0.53", "vs": [["Best of 20 permutations", "−0.04"], ["Leaky random split", "0.63"]], "audit": [["Validated on held-out mothers", "pass"], ["Beats a permutation null", "pass"], ["Leakage measured", "pass"]], "verdict": "good", "ent": "clock"}, {"q": "Is it more than a change in cell mix?", "metric": "R² 0.56", "vs": [["All cells", "0.53"], ["Weakest fold", "0.08"]], "audit": [["Validated on held-out mothers", "pass"], ["Beats a permutation null", "not run"]], "verdict": "good", "ent": "clock_epi"}, {"q": "Is it more than recognising the mother?", "metric": "+0.11 R² from leakage", "vs": [["Mother identified", "62%"], ["Chance", "16%"]], "audit": [["Validated on held-out mothers", "pass"], ["Leakage measured", "pass"]], "verdict": "good", "ent": "donor_clf"}, {"q": "Do the explanations reflect the model?", "metric": "error 0.77 → 1.03", "vs": [["5 random genes masked", "0.78"], ["Shuffled-label model r", "0.25"], ["Top-25 shared with permutation importance", "19/25"]], "audit": [["Explanation faithful", "pass"], ["Passes randomization check", "pass"], ["Independent method agrees", "pass"]], "verdict": "good", "ent": null}, {"q": "Which curated programmes carry the clock?", "metric": "3 of 6 above control", "vs": [["Immune signalling", "0.263"], ["Casein secretion", "0.070"], ["Lipid synthesis", "0.042"], ["Secretory machinery", "0.005"], ["HMO glycosylation", "0.004"], ["Stress response", "0.000"], ["Control (97.5th pct)", "0.030"]], "audit": [["Validated on held-out mothers", "pass"], ["Beats a permutation null", "pass"]], "verdict": "part", "ent": "cur_casein_secretion"}, {"q": "Do programme averages work as features?", "metric": "R² 0.15", "vs": [["HVG (1518 genes)", "0.48 ± 0.10"], ["PCA (40 comps)", "0.54 ± 0.14"], ["curated programs", "0.15 ± 0.13"]], "audit": [["Validated on held-out mothers", "pass"]], "verdict": "weak", "ent": null}, {"q": "Can it resolve late lactation?", "metric": "3 mothers after 200 days", "vs": [["Median mothers per timepoint", "1"]], "audit": [["Validated on held-out mothers", "pass"]], "verdict": "no", "ent": "later"}], "known_truth": {"name": "Recovers annotated cell types", "result": "98.0% accuracy on held-out mothers; median confidence 1.00", "status": "pass"}, "questions": [["Does the clock just recognise mothers?", "#scorecards"], ["Is it reading cell types instead of cell state?", "#explore/clock_epi"], ["Which genes mark early milk?", "#chains/0"], ["Is HPGD, the strongest gene, corroborated?", "#explore/HPGD"], ["Where does this disagree with what I expected?", "#contested"], ["How would this become a perturbation readout?", "#chains/3"]], "trust_rule": ["Validated on held-out mothers", "Beats the permutation null", "Explanation is faithful (masking test)", "Explanation passes the randomization check", "Corroborated by an independent method (NMF)"]};
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const E = Object.fromEntries(KB.entities.map(e => [e.id, e]));
+const TYPE = {gene: "Gene", nmf: "NMF programme", curated: "Curated programme", model: "Model", phase: "Lactation phase", dataset: "Dataset", celltype: "Cell type"};
+const NS = "http://www.w3.org/2000/svg";
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]));
+
+// ---------- theme ----------
+const prefersDark = matchMedia("(prefers-color-scheme: dark)").matches;
+let theme = (() => { try { return localStorage.getItem("lxkb-theme"); } catch (e) { return null; } })() || (prefersDark ? "dark" : "light");
+function applyTheme(){ document.documentElement.dataset.theme = theme; }
+applyTheme();
+$("#tbtn").onclick = () => { theme = theme === "dark" ? "light" : "dark"; applyTheme(); try { localStorage.setItem("lxkb-theme", theme); } catch (e) {} if (current === "graph") drawGraph(); };
+
+// ---------- helpers ----------
+const tip = $("#tip");
+const tipOn = (e, h) => { tip.innerHTML = h; tip.style.opacity = 1; tipMove(e); };
+const tipMove = e => { tip.style.left = Math.min(e.clientX + 14, innerWidth - 290) + "px"; tip.style.top = (e.clientY + 14) + "px"; };
+const tipOff = () => tip.style.opacity = 0;
+function color(e){
+  if (e.type === "phase") return e.id === "early" ? "var(--early)" : "var(--later)";
+  if (e.type === "gene") { const d = dirOf(e.id); return d === "early" ? "var(--early)" : d === "later" ? "var(--later)" : "var(--neutral)"; }
+  return {nmf: "var(--nmf)", curated: "var(--cur)", model: "var(--model)", dataset: "var(--data)", celltype: "var(--data)"}[e.type];
+}
+function dirOf(id){ const l = KB.links.find(l => l.a === id && (l.b === "early" || l.b === "later")); return l ? l.b : null; }
+const pips = t => t == null ? '<span class="src literature">literature</span>' : `<span class="pips" title="trust ${t}/5">${[0,1,2,3,4].map(i => `<i class="${i < t ? "f" : ""}"></i>`).join("")}</span>`;
+const ICON = {pass: "✓", fail: "✕", "not run": "○", flag: "!"};
+const stClass = s => s.replace(/[^a-z]/g, "");
+const label = s => ({supported: "supported", "not supported": "not supported", weak: "weak link", untested: "untested"}[s] || s);
+function linksOf(id){ return KB.links.filter(l => l.a === id || l.b === id); }
+
+// ---------- routing ----------
+let current = "explore";
+function route(){
+  const [v, arg] = (location.hash.slice(1) || "explore").split("/").map(decodeURIComponent);
+  current = ["explore", "graph", "chains", "contested", "scorecards"].includes(v) ? v : "explore";
+  $$(".view").forEach(s => s.classList.toggle("on", s.id === "v-" + current));
+  $$("#tabs a").forEach(a => a.classList.toggle("on", a.dataset.v === current));
+  if (current === "explore") showEntity(arg && E[arg] ? arg : null);
+  if (current === "graph") { drawGraph(arg); }
+  if (current === "chains" && arg != null) setTimeout(() => document.getElementById("chain-" + arg)?.scrollIntoView({behavior: "smooth", block: "start"}), 30);
+  if (current !== "chains" && current !== "explore") scrollTo(0, 0);
+}
+addEventListener("hashchange", route);
+const go = h => { location.hash = h; };
+
+// ---------- explore ----------
+let ftype = "all";
+const FILTERS = [["all", "All"], ["gene", "Genes"], ["nmf", "NMF programmes"], ["curated", "Curated"], ["model", "Models"], ["phase", "Phases"], ["dataset", "Data"]];
+$("#filters").innerHTML = FILTERS.map(([k, n]) => `<button class="chipf ${k === "all" ? "on" : ""}" data-k="${k}">${n}</button>`).join("");
+$$("#filters .chipf").forEach(b => b.onclick = () => { ftype = b.dataset.k; $$("#filters .chipf").forEach(x => x.classList.toggle("on", x === b)); renderList(); });
+$("#fq").oninput = renderList;
+const ORDER = {model: 0, phase: 1, dataset: 2, celltype: 2, nmf: 3, curated: 4, gene: 5};
+function renderList(){
+  const q = $("#fq").value.trim().toLowerCase();
+  const items = KB.entities.filter(e => (ftype === "all" || e.type === ftype || (ftype === "dataset" && e.type === "celltype"))
+      && (!q || e.name.toLowerCase().includes(q) || e.id.toLowerCase().includes(q)))
+    .sort((a, b) => ORDER[a.type] - ORDER[b.type] || (a.rank || 99) - (b.rank || 99) || a.name.localeCompare(b.name, undefined, {numeric: true}));
+  const sel = (location.hash.split("/")[1] || "");
+  $("#elist").innerHTML = items.map(e => `<div class="eitem ${decodeURIComponent(sel) === e.id ? "on" : ""}" data-id="${esc(e.id)}"><span class="dot" style="background:${color(e)}"></span><span class="nm">${esc(e.name)}</span>${e.type === "gene" && e.trust != null ? pips(e.trust) : `<span style="font-size:11.5px;color:var(--ink-3)">${TYPE[e.type]}</span>`}</div>`).join("")
+    || '<div style="padding:12px;color:var(--ink-3)">No match.</div>';
+  $$("#elist .eitem").forEach(n => n.onclick = () => go("explore/" + encodeURIComponent(n.dataset.id)));
+}
+function home(){
+  return `<span class="tbadge">Start here</span><h2>Ask the knowledge base</h2>
+    <p class="desc">This knowledge base turns one analysis of human milk single-cell data into linked, checkable claims: which genes move a cell along the axis from early to later lactation, which programmes they belong to, and how much each link should be trusted.</p>
+    <div class="qgrid">${KB.questions.map(([q, h]) => `<button class="qbtn" data-h="${h}">${esc(q)}<span>${h.startsWith("#explore") ? "opens an entity" : h.startsWith("#chains") ? "opens a chain" : "opens " + h.slice(1)}</span></button>`).join("")}</div>
+    <h4>How trust is scored (0–5)</h4>
+    <p class="desc" style="margin:0">One point for each check passed by the evidence behind a model link:</p>
+    <ol class="rule">${KB.trust_rule.map(r => `<li>${esc(r)}</li>`).join("")}</ol>
+    <p class="desc" style="margin-top:8px">Anything flagged for a known confound is capped at 2. Literature links are drawn solid and keep their source's standing rather than a score.</p>`;
+}
+function showEntity(id){
+  renderList();
+  const c = $("#ecard");
+  if (!id) { c.innerHTML = home(); $$("#ecard .qbtn").forEach(b => b.onclick = () => go(b.dataset.h.slice(1))); return; }
+  const e = E[id];
+  const ls = linksOf(id);
+  const out = ls.map(l => {
+    const other = l.a === id ? l.b : l.a, o = E[other];
+    const rel = l.a === id ? l.rel : "← " + l.rel;
+    return `<div class="lk"><span class="rel">${esc(rel)}</span><span><span class="tgt" data-id="${esc(other)}">${esc(o.name)}</span><span class="why">${esc(l.why)}</span></span>
+      <span style="display:flex;gap:8px;align-items:center">${l.source === "model" ? '<span class="src model">model</span>' : ""}${pips(l.trust)}<span class="st ${stClass(l.status)}">${label(l.status)}</span></span></div>`;
+  }).join("");
+  const genes = e.genes ? `<h4>Genes</h4><div class="gchips">${e.genes.map(g => `<span class="gchip ${E[g] ? "known" : ""}" data-id="${esc(g)}" title="${E[g] ? "open" : "not an entity in this KB"}">${esc(g)}</span>`).join("")}</div>` : "";
+  c.innerHTML = `<span class="tbadge"><span class="dot" style="background:${color(e)}"></span>${TYPE[e.type]}${e.trust != null ? ` · trust ${pips(e.trust)} ${e.trust}/5` : ""}</span>
+    <h2>${esc(e.name)}</h2><p class="desc">${esc(e.desc || "")}${e.url ? ` <a href="${e.url}">Source</a>` : ""}</p>
+    ${e.stats ? `<div class="kv">${e.stats.map(([k, v]) => `<div><b>${esc(v)}</b><span>${esc(k)}</span></div>`).join("")}</div>` : ""}
+    ${e.checks ? `<h4>Checks</h4><ul class="checks">${e.checks.map(([n, s]) => `<li><span class="ic ${s.replace(" ", "")}">${ICON[s]}</span><span>${esc(n)}${s === "not run" ? ' <span style="color:var(--ink-3)">(not run)</span>' : ""}</span></li>`).join("")}</ul>` : ""}
+    ${genes}
+    <h4>Links (${ls.length})</h4><div class="links">${out || '<span style="color:var(--ink-3)">none</span>'}</div>
+    <div style="margin-top:18px;display:flex;gap:8px"><a class="btn" href="#graph/${encodeURIComponent(id)}">Show in graph</a><a class="btn" href="#explore">All questions</a></div>`;
+  $$("#ecard [data-id]").forEach(n => { if (E[n.dataset.id]) n.onclick = () => go("explore/" + encodeURIComponent(n.dataset.id)); });
+}
+
+// ---------- graph ----------
+let sim = null;
+function drawGraph(focus){
+  const svg = $("#gsvg"); svg.innerHTML = "";
+  const W = svg.clientWidth || 1200, H = 720;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const minT = +$("#mt").value, hideNS = $("#hr").checked, gLab = $("#gl").checked;
+  const links = KB.links.filter(l => (l.source === "literature" || l.trust >= minT) && !(hideNS && l.status === "not supported"));
+  const used = new Set(links.flatMap(l => [l.a, l.b]));
+  const prev = sim ? Object.fromEntries(sim.nodes.map(n => [n.id, n])) : {};
+  const nodes = KB.entities.filter(e => used.has(e.id) || e.type === "phase").map(e => {
+    const p = prev[e.id];
+    const r = e.type === "phase" ? 22 : e.type === "model" ? 13 : (e.type === "nmf" || e.type === "curated") ? 10 : (e.type === "gene" ? 4 + (e.trust || 2) * 0.9 : 11);
+    const n = {id: e.id, e, r, x: p ? p.x : W / 2 + (Math.random() - .5) * W * .6, y: p ? p.y : H / 2 + (Math.random() - .5) * H * .6, vx: 0, vy: 0};
+    if (e.id === "early") { n.fx = W * .1; n.fy = H / 2; } if (e.id === "later") { n.fx = W * .9; n.fy = H / 2; }
+    return n;
+  });
+  const byId = Object.fromEntries(nodes.map(n => [n.id, n]));
+  const L = links.filter(l => byId[l.a] && byId[l.b]).map(l => ({...l, s: byId[l.a], t: byId[l.b]}));
+  const gL = document.createElementNS(NS, "g"), gN = document.createElementNS(NS, "g"); svg.append(gL, gN);
+  const lineEls = L.map(l => { const ln = document.createElementNS(NS, "line");
+    ln.setAttribute("stroke", l.status === "not supported" ? "var(--bad)" : "var(--axis)");
+    ln.setAttribute("stroke-width", l.trust == null ? 1.6 : 0.5 + l.trust * 0.45);
+    if (l.source === "model") ln.setAttribute("stroke-dasharray", "4 3");
+    ln.setAttribute("opacity", .75); gL.appendChild(ln); return ln; });
+  const nodeEls = nodes.map(n => {
+    const g = document.createElementNS(NS, "g"); g.style.cursor = "pointer";
+    const sq = n.e.type === "nmf" || n.e.type === "curated";
+    const sh = document.createElementNS(NS, sq ? "rect" : "circle");
+    if (sq) { sh.setAttribute("width", n.r * 2); sh.setAttribute("height", n.r * 2); sh.setAttribute("x", -n.r); sh.setAttribute("y", -n.r); sh.setAttribute("rx", n.e.type === "curated" ? 2 : 5); if (n.e.type === "curated") sh.setAttribute("transform", "rotate(45)"); }
+    else sh.setAttribute("r", n.r);
+    sh.setAttribute("fill", color(n.e)); sh.setAttribute("stroke", "var(--panel)"); sh.setAttribute("stroke-width", 2);
+    g.appendChild(sh);
+    const show = n.e.type !== "gene" || gLab;
+    if (show) { const t = document.createElementNS(NS, "text"); t.setAttribute("class", "nlabel" + (n.e.type === "gene" ? "" : " big"));
+      t.setAttribute("x", n.r + 4); t.setAttribute("y", 4); t.textContent = n.e.type === "nmf" ? n.id : n.e.name.replace("Lactation clock ", "Clock "); g.appendChild(t); }
+    g.addEventListener("pointerenter", ev => tipOn(ev, `<b>${esc(n.e.name)}</b><br>${TYPE[n.e.type]}${n.e.trust != null ? ` · trust ${n.e.trust}/5` : ""}<br><span style="opacity:.75">click to open · drag to move</span>`));
+    g.addEventListener("pointermove", tipMove); g.addEventListener("pointerleave", tipOff);
+    gN.appendChild(g); n.g = g; return g;
+  });
+  // focus highlight
+  if (focus && byId[focus]) {
+    const nb = new Set([focus]); L.forEach(l => { if (l.a === focus) nb.add(l.b); if (l.b === focus) nb.add(l.a); });
+    nodes.forEach(n => n.g.classList.toggle("dim", !nb.has(n.id)));
+    L.forEach((l, i) => lineEls[i].classList.toggle("dim", !(l.a === focus || l.b === focus)));
+  }
+  // drag
+  let drag = null, moved = false;
+  nodes.forEach(n => n.g.addEventListener("pointerdown", ev => { drag = n; moved = false; svg.classList.add("drag"); svg.setPointerCapture(ev.pointerId); ev.preventDefault(); }));
+  svg.onpointermove = ev => { if (!drag) return; const pt = toSvg(ev); drag.fx = pt.x; drag.fy = pt.y; moved = true; heat(0.3); };
+  svg.onpointerup = ev => { if (!drag) return; svg.classList.remove("drag");
+    if (!moved) go("explore/" + encodeURIComponent(drag.id));
+    else if (drag.id !== "early" && drag.id !== "later") { drag.fx = null; drag.fy = null; }
+    drag = null; };
+  function toSvg(ev){ const r = svg.getBoundingClientRect(); return {x: (ev.clientX - r.left) * W / r.width, y: (ev.clientY - r.top) * H / r.height}; }
+  // simulation
+  let alpha = prev && Object.keys(prev).length ? 0.3 : 1, raf;
+  function heat(a){ alpha = Math.max(alpha, a); if (!raf) raf = requestAnimationFrame(tick); }
+  function tick(){
+    raf = null;
+    for (let i = 0; i < nodes.length; i++) for (let j = i + 1; j < nodes.length; j++) {
+      const a = nodes[i], b = nodes[j]; let dx = b.x - a.x, dy = b.y - a.y, d2 = dx * dx + dy * dy + .01;
+      const rep = (a.r + b.r + 22) ** 2 / d2 * 2.6 * alpha; const d = Math.sqrt(d2);
+      dx /= d; dy /= d; a.vx -= dx * rep; a.vy -= dy * rep; b.vx += dx * rep; b.vy += dy * rep;
+    }
+    L.forEach(l => { const dx = l.t.x - l.s.x, dy = l.t.y - l.s.y, d = Math.sqrt(dx * dx + dy * dy) + .01;
+      const target = (l.b === "early" || l.b === "later") ? 190 : 90, k = 0.02 * alpha * (l.trust == null ? 0.6 : 0.4 + l.trust / 8);
+      const f = (d - target) * k, ux = dx / d, uy = dy / d; l.s.vx += ux * f; l.s.vy += uy * f; l.t.vx -= ux * f; l.t.vy -= uy * f; });
+    nodes.forEach(n => {
+      n.vx += (W / 2 - n.x) * 0.0012 * alpha; n.vy += (H / 2 - n.y) * 0.0022 * alpha;
+      if (n.fx != null) { n.x = n.fx; n.y = n.fy; n.vx = n.vy = 0; }
+      else { n.vx *= 0.82; n.vy *= 0.82; n.x = Math.max(n.r + 4, Math.min(W - n.r - 90, n.x + n.vx)); n.y = Math.max(n.r + 4, Math.min(H - n.r - 4, n.y + n.vy)); }
+      n.g.setAttribute("transform", `translate(${n.x.toFixed(1)},${n.y.toFixed(1)})`);
+    });
+    L.forEach((l, i) => { const ln = lineEls[i]; ln.setAttribute("x1", l.s.x); ln.setAttribute("y1", l.s.y); ln.setAttribute("x2", l.t.x); ln.setAttribute("y2", l.t.y); });
+    alpha *= 0.985;
+    if (alpha > 0.02) raf = requestAnimationFrame(tick);
+  }
+  sim = {nodes, heat};
+  heat(alpha);
+}
+$("#mt").oninput = e => { $("#mtv").textContent = e.target.value; drawGraph(location.hash.split("/")[1]); };
+$("#hr").onchange = () => drawGraph(location.hash.split("/")[1]);
+$("#gl").onchange = () => drawGraph(location.hash.split("/")[1]);
+$("#reheat").onclick = () => { sim = null; drawGraph(location.hash.split("/")[1]); };
+addEventListener("resize", () => { if (current === "graph") drawGraph(location.hash.split("/")[1]); });
+
+// ---------- chains ----------
+const EVN = {data: "data", model: "model", literature: "literature", inference: "inference", untested: "not yet tested"};
+$("#chains").innerHTML = KB.chains.map((c, ci) => {
+  const weakIdx = c.steps.findIndex(s => s[2] !== "supported");
+  const weak = weakIdx < 0 ? "Every step is supported by this analysis." : `Weakest link: step ${weakIdx + 1} — ${c.steps[weakIdx][2] === "weak" ? "supported, but on thin data" : "not yet tested"}.`;
+  return `<div class="panel chain" id="chain-${ci}"><h3>${esc(c.title)}</h3><p class="weak">${weak}</p><div class="steps">${c.steps.map((s, i) =>
+    `${i ? '<div class="arrow">→</div>' : ""}<div class="step s-${s[2]}"><div class="t">${i + 1}. ${esc(s[0])}</div><div class="n">${esc(s[3])}</div>
+     <div class="bd"><span class="ev">${EVN[s[1]]}</span><span class="st ${s[2] === "weak" ? "weak" : stClass(s[2])}">${label(s[2])}</span></div></div>`).join("")}</div></div>`;
+}).join("");
+
+// ---------- contested ----------
+const CLAIMLABEL = {resolved: "resolved", contested: "contested", open: "open", refuted: "not supported"};
+$("#claims").innerHTML = KB.claims.map(c => `<div class="panel claim"><span class="st ${c.status}">${CLAIMLABEL[c.status]}</span><h3>"${esc(c.claim)}"</h3>
+  <div class="sides"><div class="side2"><b>${esc(c.a[0])}</b>${esc(c.a[1])}</div><div class="vs">vs</div><div class="side2"><b>${esc(c.b[0])}</b>${esc(c.b[1])}</div></div>
+  <p class="settle"><b>What would settle it:</b> ${esc(c.settle)}</p></div>`).join("");
+
+// ---------- scorecards ----------
+const VERD = {good: ["Supported", "good"], part: ["In part", "part"], weak: ["Weak", "contested"], no: ["Not supported", "no"]};
+const kt = KB.known_truth;
+$("#kt").innerHTML = `<span class="ic pass" style="width:28px;height:28px;font-size:15px">✓</span><div><b>Known-truth check: ${esc(kt.name)}</b><br><span style="color:var(--ink-2);font-size:14px">${esc(kt.result)}. The pipeline recovers labels it should be able to recover before any new claim is read.</span></div>`;
+$("#cards").innerHTML = KB.cards.map(c => {
+  const app = c.audit.filter(a => a[1] !== "not run"), passed = app.filter(a => a[1] === "pass").length;
+  const [vl, vc] = VERD[c.verdict];
+  return `<div class="panel sc"><div class="q">${esc(c.q)}</div><div class="m">${esc(c.metric)}</div>
+    <table>${c.vs.map(([k, v]) => `<tr><td>${esc(k)}</td><td>${esc(v)}</td></tr>`).join("")}</table>
+    <ul class="checks">${c.audit.map(([n, s]) => `<li><span class="ic ${s.replace(" ", "")}">${ICON[s]}</span><span>${esc(n)}${s === "not run" ? ' <span style="color:var(--ink-3)">(not run)</span>' : ""}</span></li>`).join("")}</ul>
+    <div class="foot"><span class="st ${vc}">${vl}</span><span style="font-size:13px;color:var(--ink-3)">${passed}/${app.length} applicable checks passed${c.ent ? ` · <a href="#explore/${encodeURIComponent(c.ent)}">open</a>` : ""}</span></div></div>`;
+}).join("");
+
+// ---------- search palette ----------
+const pal = $("#pal"), pq = $("#pq");
+function openPal(){ pal.classList.add("on"); pq.value = ""; renderPal(); pq.focus(); }
+function closePal(){ pal.classList.remove("on"); }
+function renderPal(){
+  const q = pq.value.trim().toLowerCase();
+  const res = KB.entities.filter(e => !q || e.name.toLowerCase().includes(q) || e.id.toLowerCase().includes(q)).slice(0, 12);
+  $("#pres").innerHTML = res.map((e, i) => `<div class="eitem ${i ? "" : "on"}" data-id="${esc(e.id)}"><span class="dot" style="background:${color(e)}"></span><span class="nm">${esc(e.name)}</span><span style="font-size:11.5px;color:var(--ink-3)">${TYPE[e.type]}</span></div>`).join("") || '<div style="padding:12px;color:var(--ink-3)">No match.</div>';
+  $$("#pres .eitem").forEach(n => n.onclick = () => { closePal(); go("explore/" + encodeURIComponent(n.dataset.id)); });
+}
+pq.oninput = renderPal;
+pq.onkeydown = e => { if (e.key === "Enter") { const f = $("#pres .eitem"); if (f) f.click(); } if (e.key === "Escape") closePal(); };
+pal.onclick = e => { if (e.target === pal) closePal(); };
+$("#sbtn").onclick = openPal;
+addEventListener("keydown", e => { if (e.key === "/" && document.activeElement.tagName !== "INPUT") { e.preventDefault(); openPal(); } if (e.key === "Escape") closePal(); });
+
+route();
+</script>
+</body>
+</html>

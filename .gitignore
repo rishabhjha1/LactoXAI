@@ -1,0 +1,8 @@
+# raw data and caches: too large for git, download from SCP1671
+data/
+outputs/
+*.h5ad
+*.txt.gz
+.ipynb_checkpoints/
+__pycache__/
+.DS_Store

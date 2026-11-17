@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LactoXAI — a lactation clock from human milk cells</title>
+<meta name="description" content="Explainable machine learning on human milk single-cell transcriptomes: a lactation clock validated on unseen mothers, with explanations tested before they are believed.">
+<style>
+:root{
+  color-scheme: light;
+  --bg:#fcfcfb; --panel:#ffffff; --ink:#0b0b0b; --ink-2:#52514e; --ink-3:#7a7974;
+  --rule:#e4e3df; --grid:#ecebe7; --axis:#b9b8b2;
+  --accent:#2a78d6; --accent-soft:#e3eefb; --muted:#a3a29c; --band:#efeeea;
+  --early:#e34948; --late:#2a78d6;
+  --good:#0ca30c; --good-bg:#e6f5e6; --warn:#b07800; --warn-bg:#fdf3d9;
+  --bad:#d03b3b; --bad-bg:#fbe9e9; --mid:#52514e; --mid-bg:#efeeea;
+  --serif: "Iowan Old Style","Charter","Palatino Linotype",Georgia,serif;
+  --sans: -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,"Helvetica Neue",Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    color-scheme: dark;
+    --bg:#141413; --panel:#1a1a19; --ink:#f0efec; --ink-2:#c3c2b7; --ink-3:#9a998f;
+    --rule:#2e2e2b; --grid:#262624; --axis:#55544f;
+    --accent:#3987e5; --accent-soft:#1d2c40; --muted:#6c6b65; --band:#24241f;
+    --early:#e66767; --late:#3987e5;
+    --good:#4cc24c; --good-bg:#16301a; --warn:#fab219; --warn-bg:#3a2e10;
+    --bad:#e66767; --bad-bg:#3a1c1c; --mid:#c3c2b7; --mid-bg:#2a2a27;
+  }
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 var(--sans);-webkit-font-smoothing:antialiased}
+a{color:var(--accent)}
+.wrap{max-width:1040px;margin:0 auto;padding:0 24px}
+header.top{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--rule)}
+header.top .wrap{display:flex;align-items:center;gap:20px;height:56px}
+.brand{font:600 17px/1 var(--serif);letter-spacing:.2px;color:var(--ink);text-decoration:none}
+.brand b{color:var(--accent);font-weight:600}
+nav.sections{display:flex;gap:18px;overflow-x:auto;font-size:14px;flex:1}
+nav.sections a{color:var(--ink-2);text-decoration:none;white-space:nowrap}
+nav.sections a:hover{color:var(--ink)}
+.btn{display:inline-flex;align-items:center;gap:6px;font:500 14px/1 var(--sans);padding:9px 14px;border-radius:8px;border:1px solid var(--rule);color:var(--ink);text-decoration:none;background:var(--panel);white-space:nowrap}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn:hover{filter:brightness(1.05)}
+
+.hero{padding:64px 0 28px}
+.eyebrow{font:600 12px/1 var(--sans);letter-spacing:1.4px;text-transform:uppercase;color:var(--ink-3)}
+h1{font:600 clamp(32px,5vw,48px)/1.12 var(--serif);margin:14px 0 18px;letter-spacing:-.4px;max-width:880px}
+.lede{font-size:19px;line-height:1.6;color:var(--ink-2);max-width:760px;margin:0 0 26px}
+.cta{display:flex;gap:10px;flex-wrap:wrap}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:40px 0 8px}
+.stat{background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:18px 18px 16px}
+.stat .num{font:600 34px/1 var(--serif);letter-spacing:-.5px}
+.stat .num small{font-size:18px;color:var(--ink-3);font-weight:500}
+.stat .lab{margin-top:10px;font-size:14px;line-height:1.45;color:var(--ink-2)}
+.stat.key .num{color:var(--accent)}
+
+section{padding:56px 0 8px;scroll-margin-top:64px}
+h2{font:600 28px/1.2 var(--serif);margin:0 0 10px;letter-spacing:-.2px}
+.sub{color:var(--ink-2);max-width:760px;margin:0 0 24px}
+.card{background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:22px 22px 16px;margin-bottom:18px}
+.card h3{font:600 17px/1.35 var(--sans);margin:0 0 4px}
+.card .note{font-size:14px;color:var(--ink-2);margin:0 0 12px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.source{font-size:12.5px;color:var(--ink-3);margin-top:8px}
+
+table{width:100%;border-collapse:collapse;font-size:14.5px}
+th,td{text-align:left;vertical-align:top;padding:11px 12px;border-bottom:1px solid var(--rule)}
+th{font-weight:600;font-size:13px;color:var(--ink-2);border-bottom:1px solid var(--axis)}
+td.q{font-weight:500;width:28%}
+.chip{display:inline-flex;align-items:center;gap:6px;font:600 12.5px/1 var(--sans);padding:6px 9px;border-radius:999px;white-space:nowrap}
+.chip svg{width:12px;height:12px}
+.chip.good{background:var(--good-bg);color:var(--good)}
+.chip.part{background:var(--warn-bg);color:var(--warn)}
+.chip.weak{background:var(--mid-bg);color:var(--mid)}
+.chip.no{background:var(--bad-bg);color:var(--bad)}
+.verdict-note{display:block;margin-top:6px;font-size:13px;color:var(--ink-2)}
+
+.chart{width:100%;position:relative}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.chart text{font-family:var(--sans)}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--ink-2);margin:2px 0 8px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+#tip{position:fixed;pointer-events:none;z-index:50;background:var(--ink);color:var(--bg);font-size:13px;line-height:1.4;padding:8px 10px;border-radius:8px;max-width:280px;opacity:0;transition:opacity .08s}
+#tip b{font-weight:600}
+
+.prog{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.prog .card{margin:0}
+.prog .tag{font:600 12px/1 var(--sans);letter-spacing:.6px;text-transform:uppercase}
+.prog .tag.early{color:var(--early)} .prog .tag.late{color:var(--late)}
+.genes{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.gene{font:500 12.5px/1 ui-monospace,SFMono-Regular,Menlo,monospace;padding:6px 8px;border-radius:6px;background:var(--band);border:1px solid var(--rule);cursor:pointer;color:var(--ink)}
+.gene.hit{background:var(--accent-soft);border-color:var(--accent);color:var(--ink)}
+
+.explorer{display:grid;grid-template-columns:1.1fr .9fr;gap:18px}
+.search{width:100%;font:15px var(--sans);padding:11px 13px;border-radius:9px;border:1px solid var(--rule);background:var(--bg);color:var(--ink);margin-bottom:12px}
+.gtable{max-height:460px;overflow:auto;border:1px solid var(--rule);border-radius:10px}
+.gtable table{font-size:14px}
+.gtable td,.gtable th{padding:9px 11px}
+.gtable tr{cursor:pointer}
+.gtable tbody tr:hover{background:var(--band)}
+.gtable tr.sel{background:var(--accent-soft)}
+.gtable thead th{position:sticky;top:0;background:var(--panel)}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.dir-early{color:var(--early);font-weight:600} .dir-late{color:var(--late);font-weight:600}
+.detail h3{font:600 22px/1.2 ui-monospace,SFMono-Regular,Menlo,monospace;margin:0 0 8px}
+.detail dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:8px 14px;font-size:14.5px}
+.detail dt{color:var(--ink-3)} .detail dd{margin:0}
+.caveat{font-size:13px;color:var(--ink-3);margin-top:14px}
+
+.gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+figure{margin:0;background:var(--panel);border:1px solid var(--rule);border-radius:12px;overflow:hidden;cursor:zoom-in;display:flex;flex-direction:column}
+figure img{width:100%;aspect-ratio:4/3;object-fit:contain;background:#fff;padding:10px;display:block}
+figcaption{padding:12px 14px 14px;font-size:13.5px;line-height:1.5;color:var(--ink-2);border-top:1px solid var(--rule)}
+figcaption b{color:var(--ink)}
+.lightbox{position:fixed;inset:0;z-index:60;background:rgba(10,10,10,.82);display:none;align-items:center;justify-content:center;padding:28px;cursor:zoom-out}
+.lightbox.open{display:flex}
+.lightbox .box{max-width:1100px;width:100%;background:#fff;border-radius:12px;overflow:hidden}
+.lightbox img{width:100%;max-height:78vh;object-fit:contain;display:block;background:#fff}
+.lightbox p{margin:0;padding:14px 18px;font-size:14.5px;color:#222}
+
+ul.limits{padding-left:20px;margin:0} ul.limits li{margin-bottom:10px}
+.next{border-left:3px solid var(--accent);padding:4px 0 4px 18px;font-size:17px;color:var(--ink);max-width:800px}
+footer{margin:64px 0 0;padding:28px 0 48px;border-top:1px solid var(--rule);font-size:14px;color:var(--ink-2)}
+footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+
+.scroll-x{overflow-x:auto;-webkit-overflow-scrolling:touch}
+@media (max-width:860px){
+  #evidence-table{min-width:720px}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .grid2,.explorer,.prog{grid-template-columns:1fr}
+  .gallery{grid-template-columns:1fr 1fr}
+  nav.sections{display:none}
+}
+@media (max-width:520px){ .gallery{grid-template-columns:1fr} .stats{grid-template-columns:1fr} }
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a class="brand" href="#">Lacto<b>XAI</b></a>
+  <nav class="sections">
+    <a href="#evidence">Evidence</a><a href="#clock">Clock</a><a href="#programmes">Programmes</a>
+    <a href="#genes">Gene explorer</a><a href="#checks">Checks</a><a href="#figures">Figures</a><a href="#limits">Limits</a>
+  </nav>
+  <a class="btn" href="kb/">Knowledge base</a>
+  <a class="btn" href="LactoXAI_report.pdf">Report (PDF)</a>
+</div></header>
+
+<main class="wrap">
+<div class="hero">
+  <div class="eyebrow">Explainable ML · Human milk single-cell transcriptomics</div>
+  <h1>Milk cells keep time: a lactation clock that works for mothers it has never seen</h1>
+  <p class="lede">A model reads one milk cell's genes and predicts how far into lactation its mother is. It holds inside epithelial cells alone, its explanations pass their own checks, and an unsupervised method that never saw the timepoints finds the same gene programmes.</p>
+  <div class="cta">
+    <a class="btn primary" href="kb/">Explore the knowledge base →</a>
+    <a class="btn" href="#evidence">See the evidence</a>
+    <a class="btn" href="https://github.com/rishabhjha1/LactoXAI">Code on GitHub</a>
+    <a class="btn" href="https://github.com/rishabhjha1/LactoXAI/blob/main/notebooks/LactoXAI.ipynb">Notebook</a>
+  </div>
+  <div class="stats" id="stats"></div>
+</div>
+
+<section id="evidence">
+  <h2>Evidence so far</h2>
+  <p class="sub" id="evidence-sub"></p>
+  <div class="card scroll-x" style="padding:6px 6px 2px"><table id="evidence-table">
+    <thead><tr><th>Question</th><th>What the model read</th><th>Held-out result</th><th>Baseline</th><th>Verdict</th></tr></thead>
+    <tbody></tbody></table></div>
+</section>
+
+<section id="clock">
+  <h2>The clock generalises, and it is not a cell-mix detector</h2>
+  <p class="sub">Every score below is computed on mothers held out of training. The leaky random split is shown only to measure how much a model would gain by recognising mothers.</p>
+  <div class="grid2">
+    <div class="card"><h3 id="r2-title"></h3><p class="note">R², higher is better. Grey bars are comparisons; the dashed line is zero.</p><div class="chart" id="chart-r2"></div><div class="source">results.json · clock_donor_heldout, clock_lactocyte_only, clock_random_split, null_r2_max</div></div>
+    <div class="card"><h3 id="fold-title"></h3><p class="note">Each dot is one held-out group of mothers. The weakest epithelial fold is the first thing to investigate.</p><div class="chart" id="chart-folds"></div><div class="source">results.json · fold_r2, clock_lactocyte_only.fold_r2</div></div>
+  </div>
+</section>
+
+<section id="programmes">
+  <h2>Two epithelial programmes carry the clock, found twice</h2>
+  <p class="sub" id="prog-sub"></p>
+  <div class="prog" id="prog-cards"></div>
+  <div class="card" style="margin-top:18px"><h3 id="abl-title"></h3><p class="note">R² lost when a programme's genes are replaced by their training mean. The shaded band holds 97.5% of random five-gene sets.</p><div class="chart" id="chart-abl"></div><div class="source">results.json · program_ablation_r2_loss, ablation_control_p97_5, ablation_coverage</div></div>
+</section>
+
+<section id="genes">
+  <h2>Gene explorer</h2>
+  <p class="sub">The 30 genes SHAP ranks highest. Click a gene for its direction, its effect size and the NMF programmes it falls in. Search any gene to check whether it appears in an NMF programme.</p>
+  <div class="explorer">
+    <div>
+      <input class="search" id="q" placeholder="Search a gene, e.g. HPGD, CSN2, KRT15" autocomplete="off" aria-label="Search genes">
+      <div class="gtable"><table id="gtable"><thead><tr><th>#</th><th>Gene</th><th>Direction</th><th>NMF programmes</th></tr></thead><tbody></tbody></table></div>
+    </div>
+    <div class="card detail" id="detail" style="margin:0"></div>
+  </div>
+  <div class="card" style="margin-top:18px"><h3 id="cf-title"></h3><p class="note">Change in predicted time when one gene is raised by one standard deviation, all else fixed. This describes the model, not biology.</p><div class="legend"><span><i style="background:var(--early)"></i>pushes earlier</span><span><i style="background:var(--late)"></i>pushes later</span></div><div class="chart" id="chart-cf"></div><div class="source">F17_counterfactuals.csv</div></div>
+</section>
+
+<section id="checks">
+  <h2>Checking the explanations before believing them</h2>
+  <p class="sub">An explanation method will faithfully describe whatever a model learned, including a shortcut. These two tests ask whether SHAP's ranking reflects the model.</p>
+  <div class="grid2">
+    <div class="card"><h3 id="faith-title"></h3><p class="note">Error as genes are masked, in SHAP order or at random. Hover for values.</p><div class="legend"><span><i style="background:var(--accent)"></i>SHAP order</span><span><i style="background:var(--muted)"></i>random order</span></div><div class="chart" id="chart-faith"></div><div class="source">results.json · faithfulness</div></div>
+    <div class="card"><h3>The attribution tracks the model</h3><p class="note" id="rand-note"></p><div class="chart" id="chart-rand"></div><div class="source">results.json · randomization_corr, shap_perm_overlap_top25</div></div>
+  </div>
+</section>
+
+<section id="figures">
+  <h2>Figures from the run</h2>
+  <p class="sub">The full-resolution figures from the notebook. Click any figure to enlarge it.</p>
+  <div class="gallery" id="gallery"></div>
+</section>
+
+<section id="limits">
+  <h2>Limits</h2>
+  <div class="card"><ul class="limits" id="limits-list"></ul></div>
+  <h2 style="margin-top:44px">Where this goes next</h2>
+  <p class="next">The clock gives a learned readout of lactocyte state: each cell's position on an early-to-late axis defined by named genes. In a perturbation screen on cultured lactocytes, a compound's effect could be scored as movement along that axis, or as loss of the secretory programme, rather than as change in a hand-picked gene set, which this analysis shows is a weak readout.</p>
+  <p class="sub" style="margin-top:14px">Two tests come first: does the axis learned from milk cells transfer to cells in culture, and do compounds with known effects on milk-producing cells move it in the expected direction?</p>
+</section>
+</main>
+
+<footer><div class="wrap">
+  <div><b>Data:</b> Single Cell Portal <a href="https://singlecell.broadinstitute.org/single_cell/study/SCP1671">SCP1671</a> · Nyquist SK, …, Shalek AK, Berger B, Goods BA. <i>Cellular and transcriptional diversity over the course of human lactation.</i> PNAS 119:e2121720119 (2022).<br>One observational cohort. No result here is a causal claim about any gene, and nothing here bears on medication use by anyone.</div>
+  <div>Rishabh Jha · MSc Computer Science, University of Victoria<br><a href="https://github.com/rishabhjha1/LactoXAI">github.com/rishabhjha1/LactoXAI</a></div>
+</div></footer>
+
+<div id="tip" role="tooltip"></div>
+<div class="lightbox" id="lb" role="dialog" aria-modal="true"><div class="box"><img alt=""><p></p></div></div>
+
+<script>
+const D = __DATA__;
+const $ = s => document.querySelector(s);
+const NS = "http://www.w3.org/2000/svg";
+const fmt = (v, d = 2) => (v < 0 ? "−" : "") + Math.abs(v).toFixed(d);
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+
+// ---------- tooltip ----------
+const tip = $("#tip");
+function showTip(e, html){ tip.innerHTML = html; tip.style.opacity = 1; moveTip(e); }
+function moveTip(e){ const x = Math.min(e.clientX + 14, innerWidth - 290); tip.style.left = x + "px"; tip.style.top = (e.clientY + 14) + "px"; }
+function hideTip(){ tip.style.opacity = 0; }
+function hover(el, html){ el.addEventListener("mouseenter", e => showTip(e, html)); el.addEventListener("mousemove", moveTip); el.addEventListener("mouseleave", hideTip); }
+
+function el(tag, attrs = {}, parent){ const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); if (parent) parent.appendChild(n); return n; }
+function svg(target, w, h, label){ const s = el("svg", {viewBox: `0 0 ${w} ${h}`, role: "img", "aria-label": label}); $(target).appendChild(s); return s; }
+function text(p, x, y, str, o = {}){ const t = el("text", Object.assign({x, y, "font-size": 12, fill: "var(--ink-2)"}, o), p); t.textContent = str; return t; }
+
+// ---------- headline stats ----------
+const R = D.results;
+const r2All = R.clock_donor_heldout.r2, r2Epi = R.clock_lactocyte_only.r2, r2Leak = R.clock_random_split.r2;
+const conv = D.convergence;
+$("#stats").innerHTML = [
+  ["key", fmt(r2All), "", `R² predicting days postpartum for <b>mothers the model never saw</b>`],
+  ["key", fmt(r2Epi), "", `R² inside <b>epithelial cells alone</b>, so it reads cell state, not cell mix`],
+  ["", "+" + fmt(R.r2_inflation_from_leakage), "", `R² a leaky split would add by recognising mothers: <b>measured, and small</b>`],
+  ["", conv.hits, `<small> / ${conv.of}</small>`, `top SHAP genes that unsupervised NMF also finds (about ${conv.expected.toFixed(0)} expected at random)`],
+].map(([c, n, s, l]) => `<div class="stat ${c}"><div class="num">${n}${s}</div><div class="lab">${l}</div></div>`).join("");
+
+// ---------- evidence table ----------
+const ICON = {good: '<svg viewBox="0 0 12 12"><path d="M2 6.5l2.5 2.5L10 3.5" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>',
+  part: '<svg viewBox="0 0 12 12"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.8" fill="none"/><path d="M6 1.5a4.5 4.5 0 010 9z" fill="currentColor"/></svg>',
+  weak: '<svg viewBox="0 0 12 12"><path d="M2.5 6h7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+  no: '<svg viewBox="0 0 12 12"><path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>'};
+const LABEL = {good: "Supported", part: "In part", weak: "Weak", no: "Not supported"};
+$("#evidence-table tbody").innerHTML = D.evidence.map(r =>
+  `<tr><td class="q">${r.q}</td><td>${r.read}</td><td>${r.score}</td><td>${r.base}</td>
+   <td><span class="chip ${r.v}">${ICON[r.v]}${LABEL[r.v]}</span>${r.note ? `<span class="verdict-note">${r.note}</span>` : ""}</td></tr>`).join("");
+const cnt = k => D.evidence.filter(r => r.v === k).length;
+const words = ["Zero","One","Two","Three","Four","Five","Six","Seven","Eight"];
+$("#evidence-sub").textContent = `${words[cnt("good")]} of ${words[D.evidence.length].toLowerCase()} questions were supported, ${words[cnt("part")].toLowerCase()} in part, ${words[cnt("weak")].toLowerCase()} weakly, and ${words[cnt("no")].toLowerCase()} not at all. Every model was validated on held-out mothers and scored against timepoints permuted across whole samples.`;
+
+// ---------- R² comparison bars ----------
+(function(){
+  const rows = [
+    {k: "Epithelial cells only", v: r2Epi, key: true, d: `Donor-held-out R² using only the ${R.clock_lactocyte_only.n_cells.toLocaleString()} epithelial cells`},
+    {k: "All cells", v: r2All, key: true, d: "Donor-held-out R² using all cell types"},
+    {k: "Random split (leaky)", v: r2Leak, d: "Same model, but a mother's cells can sit on both sides of the split"},
+    {k: "Best of 20 permutations", v: R.null_r2_max, d: "Timepoints shuffled across whole samples; the best of 20 runs"},
+  ];
+  $("#r2-title").textContent = `Epithelial cells alone reach R² ${fmt(r2Epi)}, above all cells at ${fmt(r2All)}`;
+  const W = 480, H = 220, L = 160, Rp = 52, T = 10, rowH = 46;
+  const s = svg("#chart-r2", W, H, "R² by test");
+  const lo = Math.min(0, ...rows.map(r => r.v)) - 0.02, hi = 0.7;
+  const x = v => L + (v - lo) / (hi - lo) * (W - L - Rp);
+  for (const t of [0, 0.2, 0.4, 0.6]) { el("line", {x1: x(t), x2: x(t), y1: T, y2: T + rows.length * rowH - 6, stroke: "var(--grid)"}, s); text(s, x(t), T + rows.length * rowH + 12, t.toFixed(1), {"text-anchor": "middle", "font-size": 11, fill: "var(--ink-3)"}); }
+  rows.forEach((r, i) => {
+    const y = T + i * rowH + 8, h = 26, x0 = x(0), x1 = x(r.v);
+    text(s, L - 10, y + h / 2 + 4, r.k, {"text-anchor": "end", "font-size": 12.5, fill: "var(--ink)"});
+    const b = el("rect", {x: Math.min(x0, x1), y, width: Math.max(2, Math.abs(x1 - x0)), height: h, rx: 4, fill: r.key && i === 0 ? "var(--accent)" : (r.key ? "color-mix(in srgb, var(--accent) 45%, var(--bg))" : "var(--muted)")}, s);
+    text(s, (r.v >= 0 ? x1 : x0) + 6, y + h / 2 + 4, fmt(r.v, 3), {"text-anchor": "start", "font-size": 12, fill: "var(--ink)", "font-weight": 600});
+    const hit = el("rect", {x: L - 150, y: y - 8, width: W - L + 150, height: rowH - 4, fill: "transparent"}, s);
+    hover(hit, `<b>${r.k}</b><br>R² ${fmt(r.v, 3)}<br>${r.d}`);
+  });
+  el("line", {x1: x(0), x2: x(0), y1: T, y2: T + rows.length * rowH - 6, stroke: "var(--axis)", "stroke-dasharray": "3 3"}, s);
+})();
+
+// ---------- fold dot strips ----------
+(function(){
+  const groups = [{k: "All cells", f: R.fold_r2}, {k: "Epithelial only", f: R.clock_lactocyte_only.fold_r2}];
+  const all = groups.flatMap(g => g.f);
+  $("#fold-title").textContent = `Fold R² spans ${fmt(Math.min(...R.fold_r2))}–${fmt(Math.max(...R.fold_r2))} for all cells; one epithelial fold drops to ${fmt(Math.min(...R.clock_lactocyte_only.fold_r2))}`;
+  const W = 480, H = 170, L = 120, Rp = 24, T = 18;
+  const s = svg("#chart-folds", W, H, "Per-fold R²");
+  const x = v => L + v / 0.8 * (W - L - Rp);
+  for (const t of [0, 0.2, 0.4, 0.6, 0.8]) { el("line", {x1: x(t), x2: x(t), y1: T - 8, y2: H - 30, stroke: "var(--grid)"}, s); text(s, x(t), H - 14, t.toFixed(1), {"text-anchor": "middle", "font-size": 11, fill: "var(--ink-3)"}); }
+  groups.forEach((g, gi) => {
+    const y = T + 20 + gi * 52;
+    text(s, L - 12, y + 4, g.k, {"text-anchor": "end", "font-size": 12.5, fill: "var(--ink)"});
+    const mean = g.f.reduce((a, b) => a + b, 0) / g.f.length;
+    el("line", {x1: x(mean), x2: x(mean), y1: y - 14, y2: y + 14, stroke: "var(--ink-2)", "stroke-width": 2}, s);
+    text(s, x(mean), y - 18, "mean " + fmt(mean), {"text-anchor": "middle", "font-size": 11, fill: "var(--ink-2)"});
+    g.f.forEach((v, i) => {
+      const c = el("circle", {cx: x(v), cy: y, r: 6.5, fill: gi === 1 ? "var(--accent)" : "color-mix(in srgb, var(--accent) 45%, var(--bg))", stroke: "var(--panel)", "stroke-width": 2}, s);
+      hover(c, `<b>${g.k}, fold ${i + 1}</b><br>R² ${fmt(v, 3)}`);
+    });
+  });
+})();
+
+// ---------- programme cards ----------
+(function(){
+  const P = D.programmes;
+  $("#prog-sub").innerHTML = `SHAP ranks genes by what the model uses; NMF finds co-expressed gene programmes without ever seeing the timepoints. <b>${conv.hits} of the top ${conv.of}</b> SHAP genes fall in the four programmes below, against about ${conv.expected.toFixed(0)} expected at random. Both methods favour variable, highly expressed genes, so that baseline is generous.`;
+  $("#prog-cards").innerHTML = P.map(p => `<div class="card"><div class="tag ${p.dir}">${p.dir === "early" ? "Higher in early milk" : "Higher in later milk"}</div>
+    <h3 style="margin-top:8px">${p.name}</h3><p class="note" style="margin:0">${p.nmf}</p>
+    <div class="genes">${p.genes.map(g => `<span class="gene ${D.topSet.includes(g) ? "hit" : ""}" data-g="${g}" title="${D.topSet.includes(g) ? "Also in SHAP top 30" : ""}">${g}</span>`).join("")}</div></div>`).join("");
+  document.querySelectorAll("#prog-cards .gene").forEach(n => n.addEventListener("click", () => { selectGene(n.dataset.g); $("#genes").scrollIntoView(); }));
+})();
+
+// ---------- ablation ----------
+(function(){
+  const A = R.program_ablation_r2_loss, cov = R.ablation_coverage, chi = R.ablation_control_p97_5, base = R.base_r2_xai_model;
+  const rows = Object.entries(A).sort((a, b) => b[1] - a[1]);
+  const beat = rows.filter(r => r[1] > chi).map(r => D.pretty[r[0]]);
+  const lc = beat.map((b, i) => i ? b.toLowerCase() : b);
+  const rest = rows.length - beat.length;
+  $("#abl-title").textContent = `${lc.join(", ").replace(/, ([^,]*)$/, " and $1")} beat the random-gene control; the other ${words[rest].toLowerCase()} do not`;
+  const W = 960, rowH = 40, T = 10, L = 230, Rp = 150, H = T + rows.length * rowH + 44;
+  const s = svg("#chart-abl", W, H, "R² lost per programme");
+  const hi = Math.max(...rows.map(r => r[1])) * 1.05, x = v => L + Math.max(v, 0) / hi * (W - L - Rp);
+  el("rect", {x: x(0), y: T - 4, width: x(chi) - x(0), height: rows.length * rowH, fill: "var(--band)"}, s);
+  text(s, x(chi) + 6, T + rows.length * rowH + 14, `random 5-gene sets, 97.5th percentile ${fmt(chi, 3)}`, {"font-size": 11, fill: "var(--ink-3)"});
+  for (const t of [0, 0.05, 0.1, 0.15, 0.2, 0.25]) if (t <= hi) text(s, x(t), H - 2, t.toFixed(2), {"text-anchor": "middle", "font-size": 11, fill: "var(--ink-3)"});
+  rows.forEach(([k, v], i) => {
+    const y = T + i * rowH + 7, h = 24, above = v > chi;
+    text(s, L - 12, y + h / 2 + 4, `${D.pretty[k]} (${cov[k].n_in_features} genes)`, {"text-anchor": "end", "font-size": 13, fill: "var(--ink)"});
+    el("rect", {x: x(0), y, width: Math.max(2, x(v) - x(0)), height: h, rx: 4, fill: above ? "var(--accent)" : "var(--muted)"}, s);
+    text(s, x(v) + 8, y + h / 2 + 4, above ? `${fmt(v, 3)}  (${Math.round(v / base * 100)}% of R² ${fmt(base)})` : `${fmt(v, 4)}  within control`,
+         {"font-size": 12, fill: above ? "var(--ink)" : "var(--ink-3)", "font-weight": above ? 600 : 400});
+    const hit = el("rect", {x: 0, y: y - 8, width: W, height: rowH - 2, fill: "transparent"}, s);
+    hover(hit, `<b>${D.pretty[k]}</b><br>genes: ${cov[k].in_features.join(", ")}<br>R² lost: ${fmt(v, 4)} ${above ? "(above control)" : "(within control)"}`);
+  });
+  el("line", {x1: x(0), x2: x(0), y1: T - 4, y2: T + rows.length * rowH - 4, stroke: "var(--axis)"}, s);
+})();
+
+// ---------- gene explorer ----------
+const geneRows = D.topGenes;
+function nmfOf(g){ return Object.entries(D.nmf).filter(([, gs]) => gs.includes(g)).map(([k]) => k); }
+function dirCell(g){ const c = D.cf[g]; if (c === undefined) return '<span style="color:var(--ink-3)">not tested</span>'; return c < 0 ? '<span class="dir-early">← earlier</span>' : '<span class="dir-late">later →</span>'; }
+function renderTable(filter = ""){
+  const f = filter.trim().toUpperCase();
+  const list = f ? geneRows.filter(g => g.includes(f)) : geneRows;
+  $("#gtable tbody").innerHTML = list.map(g => `<tr data-g="${g}"><td>${geneRows.indexOf(g) + 1}</td><td class="mono">${g}</td><td>${dirCell(g)}</td><td>${nmfOf(g).join(", ") || "—"}</td></tr>`).join("")
+    || `<tr><td colspan="4" style="color:var(--ink-2)">${f} is not in the SHAP top 30. ${nmfOf(f).length ? `It does appear in ${nmfOf(f).join(", ")}.` : "It is not in any NMF programme's top 25 either."}</td></tr>`;
+  document.querySelectorAll("#gtable tbody tr[data-g]").forEach(tr => tr.addEventListener("click", () => selectGene(tr.dataset.g)));
+}
+function selectGene(g){
+  document.querySelectorAll("#gtable tr").forEach(tr => tr.classList.toggle("sel", tr.dataset.g === g));
+  const rank = geneRows.indexOf(g) + 1, c = D.cf[g], progs = nmfOf(g);
+  const pct = c === undefined ? null : Math.round((Math.exp(c) - 1) * 100);
+  $("#detail").innerHTML = `<h3>${g}</h3><dl>
+    <dt>SHAP rank</dt><dd>${rank ? `#${rank} of ${D.featureCount} genes` : "outside the top 30"}</dd>
+    <dt>Effect of +1 SD</dt><dd>${c === undefined ? "not in the counterfactual test (top 20 only)" : `${fmt(c, 3)} log-days, about <b class="${c < 0 ? "dir-early" : "dir-late"}">${Math.abs(pct)}% ${c < 0 ? "earlier" : "later"}</b>`}</dd>
+    <dt>NMF programmes</dt><dd>${progs.length ? progs.map(p => `${p} <span style="color:var(--ink-3)">(${D.nmfLabels[p]})</span>`).join("<br>") : "none of the 12 programmes' top 25 genes"}</dd>
+    <dt>Curated programme</dt><dd>${D.curated[g] || "none"}</dd></dl>
+    <p class="caveat">Directions and sizes describe the model's behaviour on held-out cells. They are hypotheses about biology, not causal claims. NMF programme names are my reading of each programme's top genes.</p>`;
+}
+$("#q").addEventListener("input", e => renderTable(e.target.value));
+renderTable(); selectGene("HPGD");
+
+// ---------- counterfactual diverging bars ----------
+(function(){
+  const rows = Object.entries(D.cf).sort((a, b) => a[1] - b[1]);
+  const lo = rows[0], hiR = rows[rows.length - 1];
+  $("#cf-title").textContent = `${lo[0]} moves predictions most: +1 SD shifts them about ${Math.round((1 - Math.exp(lo[1])) * 100)}% earlier`;
+  const W = 960, rowH = 22, T = 8, L = 90, H = T + rows.length * rowH + 26, Rp = 60;
+  const s = svg("#chart-cf", W, H, "Counterfactual effect per gene");
+  const m = Math.max(...rows.map(r => Math.abs(r[1]))) * 1.08, x = v => L + (v + m) / (2 * m) * (W - L - Rp);
+  for (const t of [-0.2, -0.1, 0, 0.1, 0.2]) if (Math.abs(t) <= m) { el("line", {x1: x(t), x2: x(t), y1: T, y2: T + rows.length * rowH, stroke: t === 0 ? "var(--axis)" : "var(--grid)"}, s); text(s, x(t), H - 6, (t > 0 ? "+" : "") + fmt(t, 1), {"text-anchor": "middle", "font-size": 11, fill: "var(--ink-3)"}); }
+  rows.forEach(([g, v], i) => {
+    const y = T + i * rowH + 3, h = rowH - 6;
+    text(s, L - 10, y + h / 2 + 4, g, {"text-anchor": "end", "font-size": 12, fill: "var(--ink)", "font-family": "ui-monospace,Menlo,monospace"});
+    const b = el("rect", {x: Math.min(x(0), x(v)), y, width: Math.abs(x(v) - x(0)), height: h, rx: 3, fill: v < 0 ? "var(--early)" : "var(--late)"}, s);
+    hover(b, `<b>${g}</b><br>${fmt(v, 3)} log-days per +1 SD<br>about ${Math.abs(Math.round((Math.exp(v) - 1) * 100))}% ${v < 0 ? "earlier" : "later"}`);
+    b.style.cursor = "pointer"; b.addEventListener("click", () => selectGene(g));
+  });
+})();
+
+// ---------- faithfulness line ----------
+(function(){
+  const F = R.faithfulness, ks = F.ks, n = ks.length;
+  const top5 = F.shap[ks.indexOf(5)], rnd5 = F.random[ks.indexOf(5)], b0 = F.shap[0];
+  $("#faith-title").textContent = `Masking SHAP's top 5 genes raises error from ${fmt(b0)} to ${fmt(top5)}; 5 random genes, only to ${fmt(rnd5)}`;
+  const W = 480, H = 250, L = 46, Rp = 16, T = 14, B = 40;
+  const s = svg("#chart-faith", W, H, "Faithfulness curves");
+  const ys = [...F.shap, ...F.random], y0 = Math.min(...ys) - 0.05, y1 = Math.max(...ys) + 0.05;
+  const x = i => L + i / (n - 1) * (W - L - Rp), y = v => T + (y1 - v) / (y1 - y0) * (H - T - B);
+  for (let t = Math.ceil(y0 * 10) / 10; t <= y1; t += 0.1) { el("line", {x1: L, x2: W - Rp, y1: y(t), y2: y(t), stroke: "var(--grid)"}, s); text(s, L - 8, y(t) + 4, t.toFixed(1), {"text-anchor": "end", "font-size": 11, fill: "var(--ink-3)"}); }
+  ks.forEach((k, i) => text(s, x(i), H - B + 18, k, {"text-anchor": "middle", "font-size": 11, fill: "var(--ink-3)"}));
+  text(s, (L + W - Rp) / 2, H - 4, "genes masked (log-spaced)", {"text-anchor": "middle", "font-size": 11.5, fill: "var(--ink-2)"});
+  text(s, 12, (T + H - B) / 2, "error (MAE, log-days)", {"text-anchor": "middle", "font-size": 11.5, fill: "var(--ink-2)", transform: `rotate(-90 12 ${(T + H - B) / 2})`});
+  const line = (vals, col, dash) => el("path", {d: vals.map((v, i) => (i ? "L" : "M") + x(i) + "," + y(v)).join(""), fill: "none", stroke: col, "stroke-width": 2, "stroke-dasharray": dash || ""}, s);
+  line(F.random, "var(--muted)", "5 4"); line(F.shap, "var(--accent)");
+  F.shap.forEach((v, i) => el("circle", {cx: x(i), cy: y(v), r: 4, fill: "var(--accent)", stroke: "var(--panel)", "stroke-width": 2}, s));
+  F.random.forEach((v, i) => el("circle", {cx: x(i), cy: y(v), r: 4, fill: "var(--muted)", stroke: "var(--panel)", "stroke-width": 2}, s));
+  text(s, x(4), y(F.shap[4]) + 22, "SHAP order", {"text-anchor": "middle", "font-size": 12, fill: "var(--accent)", "font-weight": 600});
+  text(s, x(4), y(F.random[4]) - 12, "random order", {"text-anchor": "middle", "font-size": 12, fill: "var(--ink-2)"});
+  const cross = el("line", {y1: T, y2: H - B, stroke: "var(--axis)", opacity: 0}, s);
+  ks.forEach((k, i) => {
+    const hit = el("rect", {x: x(i) - (W - L - Rp) / (n - 1) / 2, y: T, width: (W - L - Rp) / (n - 1), height: H - T - B, fill: "transparent"}, s);
+    hit.addEventListener("mouseenter", e => { cross.setAttribute("x1", x(i)); cross.setAttribute("x2", x(i)); cross.setAttribute("opacity", 1); showTip(e, `<b>${k} genes masked</b><br>SHAP order: ${fmt(F.shap[i], 3)}<br>random order: ${fmt(F.random[i], 3)}`); });
+    hit.addEventListener("mousemove", moveTip); hit.addEventListener("mouseleave", () => { cross.setAttribute("opacity", 0); hideTip(); });
+  });
+})();
+
+// ---------- randomization summary bars ----------
+(function(){
+  const r = R.randomization_corr, ov = R.shap_perm_overlap_top25;
+  $("#rand-note").innerHTML = `Attributions from a model trained on <b>shuffled labels</b> correlate only r = ${fmt(r)} with the real ones, and an independent method, permutation importance, shares <b>${ov} of the top 25</b> genes.`;
+  const rows = [{k: "Correlation with a shuffled-label model", v: r, max: 1, lab: "r = " + fmt(r), good: "lower is better", tip: "If SHAP only reflected gene–gene correlation, a model trained on shuffled labels would give a similar ranking (r near 1)."},
+                {k: "Top-25 genes shared with permutation importance", v: ov / 25, max: 1, lab: `${ov} / 25`, good: "higher is better", tip: "Two unrelated attribution methods agreeing on most of the top genes."}];
+  const W = 480, H = 170, L = 16, Rp = 70;
+  const s = svg("#chart-rand", W, H, "Explanation sanity checks");
+  rows.forEach((row, i) => {
+    const y = 18 + i * 74;
+    text(s, L, y, row.k, {"font-size": 12.5, fill: "var(--ink)"});
+    text(s, W - Rp + 4, y, row.good, {"font-size": 11, fill: "var(--ink-3)"});
+    el("rect", {x: L, y: y + 10, width: W - L - Rp, height: 22, rx: 4, fill: "var(--band)"}, s);
+    const b = el("rect", {x: L, y: y + 10, width: (W - L - Rp) * row.v, height: 22, rx: 4, fill: "var(--accent)"}, s);
+    text(s, L + (W - L - Rp) * row.v + 8, y + 26, row.lab, {"font-size": 12.5, fill: "var(--ink)", "font-weight": 600});
+    hover(b, `<b>${row.k}</b><br>${row.lab}<br>${row.tip}`);
+  });
+})();
+
+// ---------- gallery + lightbox ----------
+$("#gallery").innerHTML = D.figures.map(f => `<figure data-src="figures/${f.file}" data-cap="${f.cap.replace(/"/g, "&quot;")}"><img src="figures/${f.file}" alt="${f.alt}"><figcaption><b>${f.title}.</b> ${f.cap}</figcaption></figure>`).join("");
+const lb = $("#lb");
+document.querySelectorAll("figure").forEach(f => f.addEventListener("click", () => { lb.querySelector("img").src = f.dataset.src; lb.querySelector("p").textContent = f.querySelector("figcaption").textContent; lb.classList.add("open"); }));
+lb.addEventListener("click", () => lb.classList.remove("open"));
+addEventListener("keydown", e => { if (e.key === "Escape") lb.classList.remove("open"); });
+
+// ---------- limits ----------
+$("#limits-list").innerHTML = D.limits.map(l => `<li>${l}</li>`).join("");
+</script>
+</body>
+</html>
